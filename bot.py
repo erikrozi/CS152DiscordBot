@@ -63,13 +63,10 @@ class ModBot(discord.Client):
         if message.author.id == self.user.id:
             return
         
-        # Check if this message was sent in a server ("guild") or if it's a DM
-        if message.guild:
-            await self.handle_channel_message(message)
-        else:
-            await self.handle_dm(message)
+        await self.send_to_mod(message) # Forwards message to mod channel
+        await self.check_if_in_reporting(message) # Check if currently in reporting flow
 
-    async def handle_dm(self, message):
+    async def check_if_in_reporting(self, message):
         # Handle a help message
         if message.content == Report.HELP_KEYWORD:
             reply =  "Use the `report` command to begin the reporting process.\n"
@@ -97,7 +94,7 @@ class ModBot(discord.Client):
         if self.reports[author_id].report_complete():
             self.reports.pop(author_id)
 
-    async def handle_channel_message(self, message):
+    async def send_to_mod(self, message):
         # Only handle messages sent in the "group-#" channel
         if not message.channel.name == f'group-{self.group_num}':
             return 
