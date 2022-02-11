@@ -32,7 +32,9 @@ class ModBot(discord.Client):
         super().__init__(command_prefix='.', intents=intents)
         self.group_num = None   
         self.mod_channels = {} # Map from guild to the mod channel id for that guild
-        self.reports = {} # Map from user IDs to the state of their report
+        self.reports_in_progress = {} # Map from user IDs to the state of their report
+        self.reports_by_user = {} # Map from user ID of who created the report to a list of their reports
+        self.reports_about_user = {} # Map from user ID of who report is about to a list of reports against them
         self.perspective_key = key
 
     async def on_ready(self):
@@ -78,21 +80,21 @@ class ModBot(discord.Client):
         responses = []
 
         # Only respond to messages if they're part of a reporting flow
-        if author_id not in self.reports and not message.content.startswith(Report.START_KEYWORD):
+        if author_id not in self.reports_in_progress and not message.content.startswith(Report.START_KEYWORD):
             return
 
         # If we don't currently have an active report for this user, add one
-        if author_id not in self.reports:
-            self.reports[author_id] = Report(self)
+        if author_id not in self.reports_in_progress:
+            self.reports_in_progress[author_id] = Report(self)
         
-        # Let the report class handle this message; forward all the messages it returns to uss
-        responses = await self.reports[author_id].handle_message(message)
+        # Let the report class handle this message; forward all the messages it returns to us
+        responses = await self.reports_in_progress[author_id].handle_message(message)
         for r in responses:
             await message.channel.send(r)
 
-        # If the report is complete or cancelled, remove it from our map
-        if self.reports[author_id].report_complete():
-            self.reports.pop(author_id)
+        # If the report is complete or cancelled, remove it from our reports_in_progress map
+        if self.reports_in_progress[author_id].report_complete():
+            self.reports_in_progress.pop(author_id)
 
     async def send_to_mod(self, message):
         # Only handle messages sent in the "group-#" channel

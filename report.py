@@ -8,6 +8,15 @@ class State(Enum):
     MESSAGE_IDENTIFIED = auto()
     REPORT_COMPLETE = auto()
 
+# The types of reports that a user can submit.
+class ReportType(Enum):
+    HARASSMENT_BULLYING = auto()
+    SPAM = auto()
+    HATE_SPEECH = auto()
+    OTHER = auto()
+    THREATENING_DANGEROUS = auto()
+    SEXUAL = auto()
+
 class Report:
     START_KEYWORD = "report"
     CANCEL_KEYWORD = "cancel"
@@ -17,6 +26,7 @@ class Report:
         self.state = State.REPORT_START
         self.client = client
         self.message = None
+        self.report_type = None
     
     async def handle_message(self, message):
         '''
@@ -59,6 +69,8 @@ class Report:
                     "This is all I know how to do right now - it's up to you to build out the rest of my reporting flow!"]
         
         if self.state == State.MESSAGE_IDENTIFIED:
+            # TODO: first step should be asking user what type of harassment it is
+            # TODO: Based on their answer, then update self.report_type
             return ["<insert rest of reporting flow here>"]
 
         return []
