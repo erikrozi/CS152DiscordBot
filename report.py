@@ -6,6 +6,7 @@ class State(Enum):
     REPORT_START = auto()
     AWAITING_MESSAGE = auto()
     MESSAGE_IDENTIFIED = auto()
+    REPORT_CANCELLED = auto()
     REPORT_COMPLETE = auto()
 
 # The types of reports that a user can submit.
@@ -36,7 +37,7 @@ class Report:
         '''
 
         if message.content == self.CANCEL_KEYWORD:
-            self.state = State.REPORT_COMPLETE
+            self.state = State.REPORT_CANCELLED
             return ["Report cancelled."]
         
         if self.state == State.REPORT_START:
@@ -64,7 +65,8 @@ class Report:
                 return ["It seems this message was deleted or never existed. Please try again or say `cancel` to cancel."]
 
             # Here we've found the message - it's up to you to decide what to do next!
-            self.state = State.MESSAGE_IDENTIFIED
+            self.message = message
+            self.state = State.REPORT_COMPLETE # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
             return ["I found this message:", "```" + message.author.name + ": " + message.content + "```", \
                     "This is all I know how to do right now - it's up to you to build out the rest of my reporting flow!"]
         
@@ -75,9 +77,14 @@ class Report:
 
         return []
 
+    def get_user_being_reported(self):
+        return self.message.author.id
+
+    def report_cancelled(self):
+        return self.state == State.REPORT_CANCELLED
+
     def report_complete(self):
         return self.state == State.REPORT_COMPLETE
-    
 
 
     

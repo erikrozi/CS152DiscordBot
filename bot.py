@@ -76,7 +76,7 @@ class ModBot(discord.Client):
             await message.channel.send(reply)
             return
 
-        author_id = message.author.id
+        author_id = message.author.id # User who is creating the report
         responses = []
 
         # Only respond to messages if they're part of a reporting flow
@@ -92,9 +92,25 @@ class ModBot(discord.Client):
         for r in responses:
             await message.channel.send(r)
 
-        # If the report is complete or cancelled, remove it from our reports_in_progress map
-        if self.reports_in_progress[author_id].report_complete():
+        # If the report is cancelled, remove it from our reports_in_progress map
+        if self.reports_in_progress[author_id].report_cancelled():
             self.reports_in_progress.pop(author_id)
+
+        if self.reports_in_progress[author_id].report_complete():
+            completed_report = self.reports_in_progress.pop(author_id)
+
+            # Add completed report to other maps
+            user_being_reported = completed_report.get_user_being_reported()
+            user_making_report = author_id
+
+            if user_making_report not in self.reports_by_user:
+                self.reports_by_user[user_making_report] = []
+            self.reports_by_user[user_making_report].append(completed_report)
+
+            if user_being_reported not in self.reports_about_user:
+                self.reports_about_user[user_being_reported] = []
+            self.reports_about_user[user_being_reported].append(completed_report)
+
 
     async def send_to_mod(self, message):
         # Only handle messages sent in the "group-#" channel
