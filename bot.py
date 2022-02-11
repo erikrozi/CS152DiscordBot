@@ -6,6 +6,7 @@ import json
 import logging
 import re
 import requests
+import modFlow
 from report import Report
 
 # Set up logging to the console
@@ -110,6 +111,9 @@ class ModBot(discord.Client):
             if user_being_reported not in self.reports_about_user:
                 self.reports_about_user[user_being_reported] = []
             self.reports_about_user[user_being_reported].append(completed_report)
+
+            modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
+                                     self.reports_by_user, self.reports_about_user)
 
 
     async def send_to_mod(self, message):
