@@ -78,7 +78,19 @@ def check_if_have_3_strikes(reports):
 
 
 def threatening_dangerous_report(report):
-    print("Sexual")
+    who_targeting = "self" # TODO: determine who is targeting
+
+    if who_targeting is "self":
+        print("Your post has been removed due to threatening behavior. Please see the below mental health resources and call lines.")
+    elif who_targeting is "user":
+        print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think we made a mistake.")
+    else:
+        is_terrorism = False # TODO: determine if terrorism
+        if is_terrorism:
+            manager_review_queue.append(report)
+            print("Your account has been banned due to terrorism material.")
+        else:
+            print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think we made a mistake.")
 
 
 def general_harassment_report(report):
