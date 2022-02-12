@@ -1,5 +1,5 @@
 # modFlow.py
-from report import Report
+from report import Report, ReportType
 
 user_false_reports = {}
 
@@ -21,4 +21,30 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
             print("We did not find this post to be abusive. Please email us if you think we made a mistake.")
         return
 
+    # Determine what type of abuse.
+    report_type = completed_report.get_report_type()
+    if report_type == ReportType.HARASSMENT_BULLYING:
+        general_harassment_report(completed_report)
+    elif report_type == ReportType.SPAM:
+        spam_report(completed_report)
+    elif report_type == ReportType.HATE_SPEECH:
+        general_harassment_report(completed_report)
+    elif report_type == ReportType.THREATENING_DANGEROUS:
+        threatening_dangerous_report(completed_report)
+    elif report_type == ReportType.SEXUAL:
+        sexual_report(completed_report)
+    else: # Other
+        general_harassment_report(completed_report)
+
+def spam_report(report):
+    print("Spam")
+
+def threatening_dangerous_report(report):
+    print("Threatening/Dangerous")
+
+def sexual_report(report):
+    print("Sexual")
+
+def general_harassment_report(report):
+    print("General harassment")
 
