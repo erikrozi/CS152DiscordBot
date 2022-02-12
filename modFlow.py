@@ -2,6 +2,7 @@
 from report import Report, ReportType
 
 user_false_reports = {}
+manager_review_queue = []
 
 
 def new_report_filed(completed_report, user_being_reported, user_making_report, reports_by_user, reports_about_user):
@@ -33,7 +34,7 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
     elif report_type == ReportType.THREATENING_DANGEROUS:
         threatening_dangerous_report(completed_report)
     elif report_type == ReportType.SEXUAL:
-        sexual_report(completed_report)
+        sexual_report(completed_report, reports_about_user[user_being_reported])
     else: # Other
         general_harassment_report(completed_report)
 
@@ -48,14 +49,35 @@ def spam_report(reports_about_user_list):
     if spam_count > 30:
         print("Your account has been banned due to too many spam messages.")
     else:
+        # TODO: figure out how to remove message.
         print("Your post has marked as spam and has been removed. Please email us if you think we made a mistake.")
 
 
+def sexual_report(report, reports_about_user_list):
+    # TODO: check if post is CSAM
+    is_CSAM = False
+
+    if is_CSAM:
+        manager_review_queue.append(report)
+        # TODO: remove post.
+        print("Your account has been banned due to child sexual material.")
+    else:
+        check_if_have_3_strikes(reports_about_user_list)
+
+
+def check_if_have_3_strikes(reports):
+    offensive_count = 0
+    for report in reports:
+        if report.report_type != ReportType.SPAM:
+            offensive_count += 1
+
+    if offensive_count > 3:
+        print("Your account has been banned due to too many abusive posts.")
+    else:
+        print("Your post has marked as offensive and has been removed. Please email us if you think we made a mistake.")
+
+
 def threatening_dangerous_report(report):
-    print("Threatening/Dangerous")
-
-
-def sexual_report(report):
     print("Sexual")
 
 
