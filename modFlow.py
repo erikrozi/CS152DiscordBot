@@ -26,17 +26,18 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
     # Determine what type of abuse.
     report_type = completed_report.get_report_type()
     if report_type == ReportType.HARASSMENT_BULLYING:
-        general_harassment_report(completed_report)
+        general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.SPAM:
         spam_report(reports_about_user[user_being_reported])
     elif report_type == ReportType.HATE_SPEECH:
-        general_harassment_report(completed_report)
+        hate_speech_report(completed_report)
+        general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.THREATENING_DANGEROUS:
         threatening_dangerous_report(completed_report)
     elif report_type == ReportType.SEXUAL:
         sexual_report(completed_report, reports_about_user[user_being_reported])
     else: # Other
-        general_harassment_report(completed_report)
+        general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
 
 
 def spam_report(reports_about_user_list):
@@ -80,19 +81,48 @@ def check_if_have_3_strikes(reports):
 def threatening_dangerous_report(report):
     who_targeting = "self" # TODO: determine who is targeting
 
-    if who_targeting is "self":
-        print("Your post has been removed due to threatening behavior. Please see the below mental health resources and call lines.")
-    elif who_targeting is "user":
-        print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think we made a mistake.")
+    if who_targeting == "self":
+        print("Your post has been removed due to threatening behavior. Please see the below mental health resources and"
+              " call lines.")
+    elif who_targeting == "user":
+        print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think we "
+              "made a mistake.")
     else:
         is_terrorism = False # TODO: determine if terrorism
         if is_terrorism:
             manager_review_queue.append(report)
             print("Your account has been banned due to terrorism material.")
         else:
-            print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think we made a mistake.")
+            print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think "
+                  "we made a mistake.")
 
 
-def general_harassment_report(report):
-    print("General harassment")
+def hate_speech_report(report):
+    is_protected_group = False # TODO: determine if protected group
+    if is_protected_group:
+        # TODO: Remove post. Block user from messaging this user permanently.
+        print("Some forms of hate speech can be legally prosecuted, including libel. Please see these resources to see "
+              "how you could potentially hold your abusers accountable under the law.")
+
+
+def general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user):
+    num_reports_by_user_in_last_24_hours = 3 # TODO: find number of reports the user had made in last 24 hours.
+
+    if num_reports_by_user_in_last_24_hours == 0:
+        check_if_have_3_strikes(reports_about_user[user_being_reported])
+    else:
+        number_users_being_reported = 2 # TODO:
+        if number_users_being_reported == 1:
+            # TODO: block user from sending messages to this user for 24 hours. Make user re-verify identity.
+            check_if_have_3_strikes(reports_about_user[user_being_reported])
+        elif number_users_being_reported > 5:
+            # TODO: Allow user to block non-friends from messaging them for 24 hours.
+            # TODO: Engage manager to determine if should extend block of non-friends.
+            print("We noticed you have reported many users for harmful content. Please click here if you would like to "
+                  "block non-friends from messaging you for the next 24 hours. Please contact us if you think this "
+                  "block should be extended for more than 24 hours.")
+        else:
+            # TODO: Allow user to block non-friends from messaging them for 24 hours.
+            print("We noticed you have reported many users for harmful content. Please click here if you would like to "
+                  "block non-friends from messaging you for the next 24 hours.")
 
