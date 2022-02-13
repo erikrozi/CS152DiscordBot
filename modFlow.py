@@ -9,7 +9,6 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
     # Check if abuse or not.
     is_abuse = True # TODO: figure out if abuse or not
 
-    # TODO: make all print statements into return messages.
     if not is_abuse:
         # Add to false reporting map.
         if user_making_report not in user_false_reports:
@@ -18,26 +17,25 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
 
         # Check if user has > 30 false reports.
         if len(user_false_reports[user_making_report]) > 30:
-            print("Your account has been banned due to too many false reports.")
+            return "Your account has been banned due to too many false reports."
         else:
-            print("We did not find this post to be abusive. Please email us if you think we made a mistake.")
-        return
+            return "We did not find this post to be abusive. Please email us if you think we made a mistake."
 
     # Determine what type of abuse.
     report_type = completed_report.get_report_type()
     if report_type == ReportType.HARASSMENT_BULLYING:
-        general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
+        return general_harassment_report("", user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.SPAM:
-        spam_report(reports_about_user[user_being_reported])
+        return spam_report(reports_about_user[user_being_reported])
     elif report_type == ReportType.HATE_SPEECH:
-        hate_speech_report(completed_report)
-        general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
+        response = hate_speech_report(completed_report)
+        return general_harassment_report(response, user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.THREATENING_DANGEROUS:
-        threatening_dangerous_report(completed_report)
+        return threatening_dangerous_report(completed_report)
     elif report_type == ReportType.SEXUAL:
-        sexual_report(completed_report, reports_about_user[user_being_reported])
+        return sexual_report(completed_report, reports_about_user[user_being_reported])
     else: # Other
-        general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
+        return general_harassment_report("", user_being_reported, user_making_report, reports_by_user, reports_about_user)
 
 
 def spam_report(reports_about_user_list):
@@ -48,10 +46,10 @@ def spam_report(reports_about_user_list):
             spam_count += 1
 
     if spam_count > 30:
-        print("Your account has been banned due to too many spam messages.")
+        return "Your account has been banned due to too many spam messages."
     else:
         # TODO: figure out how to remove message.
-        print("Your post has marked as spam and has been removed. Please email us if you think we made a mistake.")
+        return "Your post has marked as spam and has been removed. Please email us if you think we made a mistake."
 
 
 def sexual_report(report, reports_about_user_list):
@@ -61,7 +59,7 @@ def sexual_report(report, reports_about_user_list):
     if is_CSAM:
         manager_review_queue.append(report)
         # TODO: remove post.
-        print("Your account has been banned due to child sexual material.")
+        return "Your account has been banned due to child sexual material."
     else:
         check_if_have_3_strikes(reports_about_user_list)
 
@@ -73,39 +71,40 @@ def check_if_have_3_strikes(reports):
             offensive_count += 1
 
     if offensive_count > 3:
-        print("Your account has been banned due to too many abusive posts.")
+        return "Your account has been banned due to too many abusive posts."
     else:
-        print("Your post has marked as offensive and has been removed. Please email us if you think we made a mistake.")
+        return "Your post has marked as offensive and has been removed. Please email us if you think we made a mistake."
 
 
 def threatening_dangerous_report(report):
     who_targeting = "self" # TODO: determine who is targeting
 
     if who_targeting == "self":
-        print("Your post has been removed due to threatening behavior. Please see the below mental health resources and"
-              " call lines.")
+        return "Your post has been removed due to threatening behavior. Please see the below mental health resources " \
+               "and call lines."
     elif who_targeting == "user":
-        print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think we "
-              "made a mistake.")
+        return "Your account has been banned for 24 hours due to threatening behavior. Please email us if you think " \
+               "we made a mistake."
     else:
         is_terrorism = False # TODO: determine if terrorism
         if is_terrorism:
             manager_review_queue.append(report)
-            print("Your account has been banned due to terrorism material.")
+            return "Your account has been banned due to terrorism material."
         else:
-            print("Your account has been banned for 24 hours due to threatening behavior. Please email us if you think "
-                  "we made a mistake.")
+            return "Your account has been banned for 24 hours due to threatening behavior. Please email us if you " \
+                   "think we made a mistake."
 
 
 def hate_speech_report(report):
     is_protected_group = False # TODO: determine if protected group
     if is_protected_group:
         # TODO: Remove post. Block user from messaging this user permanently.
-        print("Some forms of hate speech can be legally prosecuted, including libel. Please see these resources to see "
-              "how you could potentially hold your abusers accountable under the law.")
+        return "Some forms of hate speech can be legally prosecuted, including libel. Please see these resources " \
+                   "to see how you could potentially hold your abusers accountable under the law. "
+    return ""
 
 
-def general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user):
+def general_harassment_report(response, user_being_reported, user_making_report, reports_by_user, reports_about_user):
     num_reports_by_user_in_last_24_hours = 3 # TODO: find number of reports the user had made in last 24 hours.
 
     if num_reports_by_user_in_last_24_hours == 0:
@@ -118,11 +117,11 @@ def general_harassment_report(user_being_reported, user_making_report, reports_b
         elif number_users_being_reported > 5:
             # TODO: Allow user to block non-friends from messaging them for 24 hours.
             # TODO: Engage manager to determine if should extend block of non-friends.
-            print("We noticed you have reported many users for harmful content. Please click here if you would like to "
-                  "block non-friends from messaging you for the next 24 hours. Please contact us if you think this "
-                  "block should be extended for more than 24 hours.")
+            return response + "We noticed you have reported many users for harmful content. Please click here if you " \
+                              "would like to block non-friends from messaging you for the next 24 hours. Please " \
+                              "contact us if you think this block should be extended for more than 24 hours."
         else:
             # TODO: Allow user to block non-friends from messaging them for 24 hours.
-            print("We noticed you have reported many users for harmful content. Please click here if you would like to "
-                  "block non-friends from messaging you for the next 24 hours.")
+            return response + "We noticed you have reported many users for harmful content. Please click here if you " \
+                              "would like to block non-friends from messaging you for the next 24 hours."
 

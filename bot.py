@@ -91,8 +91,7 @@ class ModBot(discord.Client):
         
         # Let the report class handle this message; forward all the messages it returns to us
         responses = await self.reports_in_progress[author_id].handle_message(message)
-        for r in responses:
-            await message.channel.send(r)
+
 
         # If the report is cancelled, remove it from our reports_in_progress map
         if self.reports_in_progress[author_id].report_cancelled():
@@ -113,8 +112,11 @@ class ModBot(discord.Client):
                 self.reports_about_user[user_being_reported] = []
             self.reports_about_user[user_being_reported].append(completed_report)
 
-            modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
-                                     self.reports_by_user, self.reports_about_user)
+            responses += [modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
+                                     self.reports_by_user, self.reports_about_user)]
+
+        for r in responses:
+            await message.channel.send(r)
 
 
     async def send_to_mod(self, message):
