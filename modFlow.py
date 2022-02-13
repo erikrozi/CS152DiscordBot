@@ -1,5 +1,6 @@
 # modFlow.py
 from report import Report, ReportType
+from datetime import datetime
 
 user_false_reports = {}
 manager_review_queue = []
@@ -105,18 +106,26 @@ def hate_speech_report(report):
 
 
 def general_harassment_report(response, user_being_reported, user_making_report, reports_by_user, reports_about_user):
-    num_reports_by_user_in_last_24_hours = 3 # TODO: find number of reports the user had made in last 24 hours.
+    # Find number of reports the user had made in last 24 hours, and number of different people they have reported.
+    num_reports_by_user_in_last_24_hours = 0
+    users_being_reported_last_24_hours = []
+    for report in reports_by_user[user_making_report]:
+        timestamp = report.message.created_at
+        difference = datetime.utcnow() - timestamp
+        if difference.days == 0:
+            num_reports_by_user_in_last_24_hours += 1
+            if report.message.author.id not in users_being_reported_last_24_hours:
+                users_being_reported_last_24_hours.append(users_being_reported_last_24_hours)
 
     if num_reports_by_user_in_last_24_hours == 0:
         check_if_have_3_strikes(reports_about_user[user_being_reported])
     else:
-        number_users_being_reported = 2 # TODO:
+        number_users_being_reported = len(users_being_reported_last_24_hours)
         if number_users_being_reported == 1:
             # TODO: block user from sending messages to this user for 24 hours. Make user re-verify identity.
             check_if_have_3_strikes(reports_about_user[user_being_reported])
         elif number_users_being_reported > 5:
             # TODO: Allow user to block non-friends from messaging them for 24 hours.
-            # TODO: Engage manager to determine if should extend block of non-friends.
             return response + "We noticed you have reported many users for harmful content. Please click here if you " \
                               "would like to block non-friends from messaging you for the next 24 hours. Please " \
                               "contact us if you think this block should be extended for more than 24 hours."

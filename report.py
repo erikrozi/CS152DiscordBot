@@ -66,7 +66,7 @@ class Report:
 
             # Here we've found the message - it's up to you to decide what to do next!
             self.message = message
-            self.report_type = ReportType.SPAM  # This is just temporary for testing.
+            self.report_type = ReportType.OTHER  # This is just temporary for testing.
             self.state = State.REPORT_COMPLETE # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
             return ["I found this message:", "```" + message.author.name + ": " + message.content + "```", \
                     "This is all I know how to do right now - it's up to you to build out the rest of my reporting flow!"]
