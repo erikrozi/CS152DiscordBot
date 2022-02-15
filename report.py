@@ -75,12 +75,11 @@ class Report:
             self.message = message
             self.report_type = ReportType.OTHER  # This is just temporary for testing.
             self.state = State.MESSAGE_IDENTIFIED # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
-            return ["I found this message:", "```" + message.author.name + ": " + message.content + "```", \
-                    "This is all I know how to do right now - it's up to you to build out the rest of my reporting flow!"]
+            reply = "Help us understand the problem with this message."
+            return[reply]
         
         if self.state == State.MESSAGE_IDENTIFIED:
-            reply = "Help us understand the problem with this message.\n"
-            reply += "Which of the following categories best describes this message:\n"
+            reply = "Which of the following categories best describes this message:\n"
             reply += "'spam/fraud'\n'hate speech'\n'harassment/bullying'\n'threatening/dangerous behavior'\n"
             reply += "'sexual offensive content'\n'other'\n"
             self.state = State.AWAITING_ABUSE_TYPE
