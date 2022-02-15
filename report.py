@@ -113,9 +113,9 @@ class Report:
             reply = ""
             if message.content == self.SPAM_OPTION_ONE_KEYWORD:
                 reply += "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
+                reply += "Would you like to block or mute this account?\n"
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
-                # do nothing
-            reply += "Would you like to block or mute this account?\n"
+                reply += "Would you like to block or mute this account?\n"
             self.state = State.REPORT_COMPLETE #NOTE: This is a placeholder! The final report won't finish here
             reply [reply]
 
