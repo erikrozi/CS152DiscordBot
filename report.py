@@ -7,6 +7,7 @@ class State(Enum):
     AWAITING_MESSAGE = auto()
     REPORT_IDENTIFIED = auto()
     REPORT_CANCELLED = auto()
+    ABUSE_SPECIFIC_REPORT = auto()
     REPORT_COMPLETE = auto()
 
 # The types of reports that a user can submit.
@@ -23,6 +24,8 @@ class Report:
     CANCEL_KEYWORD = "cancel"
     HELP_KEYWORD = "help"
     SPAM_FRAUD_KEYWORD = "spam/fraud"
+    SPAM_OPTION_ONE_KEYWORD = "1"
+    SPAM_OPTION_TWO_KEYWORD = "2"
     HATE_SPEECH_KEYWORD = "hate speech"
     HARASSMENT_BULLYING_KEYWORD = "harassment/bullying"
     THREATENING_DANGEROUS_KEYWORD = "threatening/dangerous behavior"
@@ -85,12 +88,36 @@ class Report:
             # testing 1 abuse type
             if message.content == self.SPAM_FRAUD_KEYWORD:
                 self.report_type = ReportType.SPAM
-                reply = "TODO: This would be the start of the spam/fraud branch"
+                reply = "Please elaborate how this message is spam/fraud.\n\n"
+                reply += "Say '1' if this message is from a fake/spam account.\n"
+                reply += "Say '2' if this account is repeatedly sending you unwanted messages."
             elif message.content == self.HATE_SPEECH_KEYWORD:
                 self.report_type = ReportType.HATE_SPEECH
                 reply = "TODO: This would be the start of the hate speech branch"
-            self.state = State.REPORT_COMPLETE # Note: Placeholder for now, the final report won't finish here
+            elif message.content == self.HARASSMENT_BULLYING_KEYWORD:
+                self.report_type = ReportType.HARASSMENT_BULLYING
+                reply = "TODO: This would be the start of the harrassment and bullying branch"
+            elif message.content == self.THREATENING_DANGEROUS_KEYWORD:
+                self.report_type = ReportType.THREATENING_DANGEROUS
+                reply = "TODO: This would be the start of the threatening/dangerous behavior branch"
+            elif message.content == self.SEXUAL_KEYWORD:
+                self.report_type = ReportType.SEXUAL
+                reply = "TODO: This would be the start of the sexual offensive content branch"
+            elif message.content == self.OTHER_KEYWORD:
+                self.report_type = ReportType.OTHER
+                reply = "TODO: This would be the start of the other branch"
+            # self.state = State.REPORT_COMPLETE # Note: Placeholder for now, the final report won't finish here
             return [reply]
+
+        if self.report_type == ReportType.SPAM:
+            reply = ""
+            if message.content == self.SPAM_OPTION_ONE_KEYWORD:
+                reply += "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
+            elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
+                # do nothing
+            reply += "Would you like to block or mute this account?\n"
+            self.state = State.REPORT_COMPLETE #NOTE: This is a placeholder! The final report won't finish here
+            reply [reply]
 
         return []
 
