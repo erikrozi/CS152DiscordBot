@@ -5,7 +5,7 @@ import re
 class State(Enum):
     REPORT_START = auto()
     AWAITING_MESSAGE = auto()
-    MESSAGE_IDENTIFIED = auto()
+    REPORT_IDENTIFIED = auto()
     AWAITING_ABUSE_TYPE = auto()
     REPORT_CANCELLED = auto()
     REPORT_COMPLETE = auto()
@@ -72,13 +72,13 @@ class Report:
                 return ["It seems this message was deleted or never existed. Please try again or say `cancel` to cancel."]
 
             # Here we've found the message - it's up to you to decide what to do next!
+            reply = "Help us understand the problem with this message."
             self.message = message
             self.report_type = ReportType.OTHER  # This is just temporary for testing.
-            self.state = State.MESSAGE_IDENTIFIED # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
-            reply = "Help us understand the problem with this message."
-            return[reply]
+            self.state = State.REPORT_IDENTIFIED # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
+            return [reply]
         
-        if self.state == State.MESSAGE_IDENTIFIED:
+        if self.state == State.REPORT_IDENTIFIED:
             reply = "Which of the following categories best describes this message:\n"
             reply += "'spam/fraud'\n'hate speech'\n'harassment/bullying'\n'threatening/dangerous behavior'\n"
             reply += "'sexual offensive content'\n'other'\n"
@@ -91,6 +91,7 @@ class Report:
             # TODO: get the user's input and work with that
             # testing 1 abuse type
             if message.content == self.SPAM_FRAUD_KEYWORD:
+                self.report_type = ReportType.SPAM
                 reply = "TODO: This would be the start of the spam/fraud branch"
             self.state = State.REPORT_COMPLETE # Note: Placeholder for now, the final report won't finish here
             return [reply]
