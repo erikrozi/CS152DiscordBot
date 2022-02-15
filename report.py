@@ -82,7 +82,8 @@ class Report:
             self.report_type = ReportType.OTHER  # This is just temporary for testing.
             self.state = State.REPORT_IDENTIFIED # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
             return [reply]
-        
+
+        # TODO Ulo: Work through this to get rid of the empty message errors
         if self.state == State.REPORT_IDENTIFIED:
             reply = ""
             if message.content == self.SPAM_FRAUD_KEYWORD:
@@ -92,30 +93,41 @@ class Report:
                 reply += "Say '2' if this account is repeatedly sending you unwanted messages."
             elif message.content == self.HATE_SPEECH_KEYWORD:
                 self.report_type = ReportType.HATE_SPEECH
-                reply = "TODO: This would be the start of the hate speech branch"
+                reply = "Who is the user targeting?\n\n"
+                reply += "1) 'me'\n"
+                reply += "2) 'Someone else'\n"
+                reply += "3) 'A group of people'\n"
             elif message.content == self.HARASSMENT_BULLYING_KEYWORD:
                 self.report_type = ReportType.HARASSMENT_BULLYING
-                reply = "TODO: This would be the start of the harrassment and bullying branch"
+                reply = "Who is the user targeting?\n\n"
+                reply += "1) 'me'\n"
+                reply += "2) 'Someone else'\n"
+                reply += "3) 'A group of people'\n"
             elif message.content == self.THREATENING_DANGEROUS_KEYWORD:
                 self.report_type = ReportType.THREATENING_DANGEROUS
-                reply = "TODO: This would be the start of the threatening/dangerous behavior branch"
+                reply = "Who is the being threatened or in danger?\n\n"
+                reply += "1) The user is threatening 'me'\n"
+                reply += "2) The user is threatening or appears to be at risk of harming 'themselves'\n"
+                reply += "3) 'The user is threatening to or appears to be at risk of harming 'others''\n"
             elif message.content == self.SEXUAL_KEYWORD:
                 self.report_type = ReportType.SEXUAL
-                reply = "TODO: This would be the start of the sexual offensive content branch"
+                reply = "Is this child sexual abuse material?\n\n"
+                reply += "'yes'"
+                reply += "'no'"
             elif message.content == self.OTHER_KEYWORD:
                 self.report_type = ReportType.OTHER
-                reply = "TODO: This would be the start of the other branch"
+                reply = "TODO: This would take you to the final option about other harmful messages you'd like to report"
             return [reply]
 
-        if self.report_type == ReportType.SPAM:
-            reply = ""
-            if message.content == self.SPAM_OPTION_ONE_KEYWORD:
-                reply += "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
-                reply += "Would you like to block or mute this account?\n"
-            elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
-                reply += "Would you like to block or mute this account?\n"
-            self.state = State.REPORT_COMPLETE #NOTE: This is a placeholder! The final report won't finish here
-            return [reply]
+        # if self.report_type == ReportType.SPAM:
+        #     reply = ""
+        #     if message.content == self.SPAM_OPTION_ONE_KEYWORD:
+        #         reply += "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
+        #         reply += "Would you like to block or mute this account?\n"
+        #     elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
+        #         reply += "Would you like to block or mute this account?\n"
+        #     self.state = State.REPORT_COMPLETE #NOTE: This is a placeholder! The final report won't finish here
+        #     return [reply]
 
         return []
 
