@@ -106,7 +106,6 @@ class Report:
             elif message.content == self.OTHER_KEYWORD:
                 self.report_type = ReportType.OTHER
                 reply = "TODO: This would be the start of the other branch"
-            # self.state = State.REPORT_COMPLETE # Note: Placeholder for now, the final report won't finish here
             return [reply]
 
         if self.report_type == ReportType.SPAM:
@@ -117,7 +116,7 @@ class Report:
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
                 reply += "Would you like to block or mute this account?\n"
             self.state = State.REPORT_COMPLETE #NOTE: This is a placeholder! The final report won't finish here
-            reply [reply]
+            return [reply]
 
         return []
 
