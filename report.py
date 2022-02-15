@@ -6,6 +6,7 @@ class State(Enum):
     REPORT_START = auto()
     AWAITING_MESSAGE = auto()
     MESSAGE_IDENTIFIED = auto()
+    AWAITING_ABUSE_TYPE = auto()
     REPORT_CANCELLED = auto()
     REPORT_COMPLETE = auto()
 
@@ -22,6 +23,12 @@ class Report:
     START_KEYWORD = "report"
     CANCEL_KEYWORD = "cancel"
     HELP_KEYWORD = "help"
+    SPAM_FRAUD_KEYWORD = "spam/fraud"
+    HATE_SPEECH_KEYWORD = "hate speech"
+    HARASSMENT_BULLYING_KEYWORD = "harassment/bullying"
+    THREATENING_DANGEROUS_KEYWORD = "threatening/dangerous behavior"
+    SEXUAL_KEYWORD = "sexual offensive content"
+    OTHER_KEYWORD = "other"
 
     def __init__(self, client):
         self.state = State.REPORT_START
@@ -67,14 +74,27 @@ class Report:
             # Here we've found the message - it's up to you to decide what to do next!
             self.message = message
             self.report_type = ReportType.OTHER  # This is just temporary for testing.
-            self.state = State.REPORT_COMPLETE # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
+            self.state = State.MESSAGE_IDENTIFIED # TODO: this is just temporary for testing. This should instead be REPORT_IDENTIFIED, and later is set to REPORT_COMPLETED.
             return ["I found this message:", "```" + message.author.name + ": " + message.content + "```", \
                     "This is all I know how to do right now - it's up to you to build out the rest of my reporting flow!"]
         
         if self.state == State.MESSAGE_IDENTIFIED:
+            reply = "Help us understand the problem with this message.\n"
+            reply += "Which of the following categories best describes this message:\n"
+            reply += "'spam/fraud'\n'hate speech'\n'harassment/bullying'\n'threatening/dangerous behavior'\n"
+            reply += "'sexual offensive content'\n'other'\n"
+            self.state = State.AWAITING_ABUSE_TYPE
             # TODO: first step should be asking user what type of harassment it is
             # TODO: Based on their answer, then update self.report_type
-            return ["<insert rest of reporting flow here>"]
+            return [reply]
+
+        if self.state == State.AWAITING_ABUSE_TYPE:
+            # TODO: get the user's input and work with that
+            # testing 1 abuse type
+            if message.content == self.SPAM_FRAUD_KEYWORD:
+                reply = "TODO: This would be the start of the spam/fraud branch"
+            self.state = State.REPORT_COMPLETE # Note: Placeholder for now, the final report won't finish here
+            return [reply]
 
         return []
 
