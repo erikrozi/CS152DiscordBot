@@ -84,7 +84,7 @@ class Report:
             return [reply]
         
         if self.state == State.REPORT_IDENTIFIED:
-            reply = ""
+            reply = "123"
             if message.content == self.SPAM_FRAUD_KEYWORD:
                 self.report_type = ReportType.SPAM
                 reply += "Please elaborate how this message is spam/fraud.\n\n"
