@@ -90,41 +90,41 @@ class Report:
             reply += "Say '2' if this account is repeatedly sending you unwanted messages."
             return [reply]
 
-        # TODO Ulo: Work through this to get rid of the empty message errors
-        # if self.state == State.REPORT_IDENTIFIED:
-        #     reply = ""
-        #     if message.content == self.SPAM_FRAUD_KEYWORD:
-        #         self.report_type = ReportType.SPAM
-        #         reply = "Please elaborate how this message is spam/fraud.\n\n"
-        #         reply += "Say '1' if this message is from a fake/spam account.\n"
-        #         reply += "Say '2' if this account is repeatedly sending you unwanted messages."
-        #     elif message.content == self.HATE_SPEECH_KEYWORD:
-        #         self.report_type = ReportType.HATE_SPEECH
-        #         reply = "Who is the user targeting?\n\n"
-        #         reply += "1) 'me'\n"
-        #         reply += "2) 'Someone else'\n"
-        #         reply += "3) 'A group of people'\n"
-        #     elif message.content == self.HARASSMENT_BULLYING_KEYWORD:
-        #         self.report_type = ReportType.HARASSMENT_BULLYING
-        #         reply = "Who is the user targeting?\n\n"
-        #         reply += "1) 'me'\n"
-        #         reply += "2) 'Someone else'\n"
-        #         reply += "3) 'A group of people'\n"
-        #     elif message.content == self.THREATENING_DANGEROUS_KEYWORD:
-        #         self.report_type = ReportType.THREATENING_DANGEROUS
-        #         reply = "Who is the being threatened or in danger?\n\n"
-        #         reply += "1) The user is threatening 'me'\n"
-        #         reply += "2) The user is threatening or appears to be at risk of harming 'themselves'\n"
-        #         reply += "3) 'The user is threatening to or appears to be at risk of harming 'others''\n"
-        #     elif message.content == self.SEXUAL_KEYWORD:
-        #         self.report_type = ReportType.SEXUAL
-        #         reply = "Is this child sexual abuse material?\n\n"
-        #         reply += "'yes'"
-        #         reply += "'no'"
-        #     elif message.content == self.OTHER_KEYWORD:
-        #         self.report_type = ReportType.OTHER
-        #         reply = "TODO: This would take you to the final option about other harmful messages you'd like to report"
-        #     return [reply]
+        if message.content == self.HATE_SPEECH_KEYWORD:
+            self.report_type = ReportType.HATE_SPEECH
+            reply = "Who is the user targeting?\n\n"
+            reply += "1) 'me'\n"
+            reply += "2) 'Someone else'\n"
+            reply += "3) 'A group of people'\n"
+            return [reply]
+
+        if message.content == self.HARASSMENT_BULLYING_KEYWORD:
+            self.report_type = ReportType.HARASSMENT_BULLYING
+            reply = "Who is the user targeting?\n\n"
+            reply += "1) 'me'\n"
+            reply += "2) 'Someone else'\n"
+            reply += "3) 'A group of people'\n"
+            return [reply]
+
+        if message.content == self.THREATENING_DANGEROUS_KEYWORD:
+            self.report_type = ReportType.THREATENING_DANGEROUS
+            reply = "Who is the being threatened or in danger?\n\n"
+            reply += "1) The user is threatening 'me'\n"
+            reply += "2) The user is threatening or appears to be at risk of harming 'themselves'\n"
+            reply += "3) 'The user is threatening to or appears to be at risk of harming 'others''\n"
+            return [reply]
+
+        if message.content == self.SEXUAL_KEYWORD:
+            self.report_type = ReportType.SEXUAL
+            reply = "Is this child sexual abuse material?\n\n"
+            reply += "'yes'"
+            reply += "'no'"
+            return [reply]
+
+        if message.content == self.OTHER_KEYWORD:
+            self.report_type = ReportType.OTHER
+            reply = "TODO: This would take you to the final option about other harmful messages you'd like to report"
+            return [reply]
 
         # if self.report_type == ReportType.SPAM:
         #     reply = ""
