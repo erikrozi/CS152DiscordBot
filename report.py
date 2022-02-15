@@ -84,28 +84,27 @@ class Report:
             return [reply]
         
         if self.state == State.REPORT_IDENTIFIED:
-            # TODO: get the user's input and work with that
-            # testing 1 abuse type
+            reply = ""
             if message.content == self.SPAM_FRAUD_KEYWORD:
                 self.report_type = ReportType.SPAM
-                reply = "Please elaborate how this message is spam/fraud.\n\n"
+                reply += "Please elaborate how this message is spam/fraud.\n\n"
                 reply += "Say '1' if this message is from a fake/spam account.\n"
                 reply += "Say '2' if this account is repeatedly sending you unwanted messages."
             elif message.content == self.HATE_SPEECH_KEYWORD:
                 self.report_type = ReportType.HATE_SPEECH
-                reply = "TODO: This would be the start of the hate speech branch"
+                reply += "TODO: This would be the start of the hate speech branch"
             elif message.content == self.HARASSMENT_BULLYING_KEYWORD:
                 self.report_type = ReportType.HARASSMENT_BULLYING
-                reply = "TODO: This would be the start of the harrassment and bullying branch"
+                reply += "TODO: This would be the start of the harrassment and bullying branch"
             elif message.content == self.THREATENING_DANGEROUS_KEYWORD:
                 self.report_type = ReportType.THREATENING_DANGEROUS
-                reply = "TODO: This would be the start of the threatening/dangerous behavior branch"
+                reply += "TODO: This would be the start of the threatening/dangerous behavior branch"
             elif message.content == self.SEXUAL_KEYWORD:
                 self.report_type = ReportType.SEXUAL
-                reply = "TODO: This would be the start of the sexual offensive content branch"
+                reply += "TODO: This would be the start of the sexual offensive content branch"
             elif message.content == self.OTHER_KEYWORD:
                 self.report_type = ReportType.OTHER
-                reply = "TODO: This would be the start of the other branch"
+                reply += "TODO: This would be the start of the other branch"
             return [reply]
 
         if self.report_type == ReportType.SPAM:
