@@ -14,6 +14,8 @@ FLIRTATION = "FLIRTATION"
 THREAT = "THREAT"
 PROFANITY = "PROFANITY"
 
+AUTOMATED = "AUTOMATED"
+
 
 # TODO: figure out how to remove message.
 
@@ -48,7 +50,7 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
                    "to see how you could potentially hold your abusers accountable under the law. " + \
                general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.THREATENING_DANGEROUS:
-        return threatening_dangerous_report(completed_report, bad_things_list)
+        return threatening_dangerous_report(completed_report, bad_things_list, user_being_reported, reports_about_user)
     elif report_type == ReportType.SEXUAL:
         return sexual_report(completed_report, reports_about_user[user_being_reported])
     else: # Other
@@ -85,24 +87,26 @@ def check_if_have_3_strikes(reports):
         return "Your post has marked as offensive and has been removed. Please email us if you think we made a mistake."
 
 
-def threatening_dangerous_report(report, bad_things_list):
-    if "THREAT" is bad_things_list:
+def threatening_dangerous_report(report, bad_things_list, user_being_reported, reports_about_user):
+    if "THREAT" in bad_things_list:
         manager_review_queue.append(report) # For chance of terrorism.
 
-    return "Your account has been banned for 24 hours due to threatening behavior. Please see the below mental " \
+    return check_if_have_3_strikes(reports_about_user[user_being_reported]) + " Please see the below mental health " \
+                                                                              "resources."
 
 
 def general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user):
     # Find number of reports the user had made in last 24 hours, and number of different people they have reported.
     num_reports_by_user_in_last_24_hours = 0
     users_being_reported_last_24_hours = []
-    for report in reports_by_user[user_making_report]:
-        timestamp = report.message.created_at
-        difference = datetime.utcnow() - timestamp
-        if difference.days == 0:
-            num_reports_by_user_in_last_24_hours += 1
-            if report.message.author.id not in users_being_reported_last_24_hours:
-                users_being_reported_last_24_hours.append(users_being_reported_last_24_hours)
+    if user_making_report != AUTOMATED:
+        for report in reports_by_user[user_making_report]:
+            timestamp = report.message.created_at
+            difference = datetime.utcnow() - timestamp
+            if difference.days == 0:
+                num_reports_by_user_in_last_24_hours += 1
+                if report.message.author.id not in users_being_reported_last_24_hours:
+                    users_being_reported_last_24_hours.append(users_being_reported_last_24_hours)
 
     if num_reports_by_user_in_last_24_hours == 0:
         return check_if_have_3_strikes(reports_about_user[user_being_reported])
@@ -118,30 +122,38 @@ def general_harassment_report(user_being_reported, user_making_report, reports_b
             return "We noticed you have reported many users for harmful content. Please click here if you " \
                               "would like to block non-friends from messaging you for the next 24 hours."
 
-def automatic_report(bad_things, message, self):
-    # TODO: handle based on report.
+def automatic_report(bad_things, message, self, reports_about_user):
     new_report = Report(self)
     new_report.message = message
     new_report.state = State.AUTOMATED_REPORT
+    user_being_reported = message.author.id
+    if user_being_reported not in reports_about_user:
+        self.reports_about_user[user_being_reported] = []
+    self.reports_about_user[user_being_reported].append(new_report)
 
     for bad_thing in bad_things:
         if bad_thing == SEVERE_TOXICITY:
             new_report.report_type = ReportType.HARASSMENT_BULLYING
-            print("YO")
+            return threatening_dangerous_report(new_report, bad_things, user_being_reported, reports_about_user)
         elif bad_thing == TOXICITY:
             new_report.report_type = ReportType.HATE_SPEECH
-            print("YO")
+            return "Some forms of hate speech can be legally prosecuted, including libel. Please see these resources " \
+                   "to see how you could potentially hold your abusers accountable under the law. " + \
+                   general_harassment_report(user_being_reported, AUTOMATED, [],
+                                             reports_about_user)
         elif bad_thing == THREAT:
             new_report.report_type = ReportType.THREATENING_DANGEROUS
-            print("")
+            return threatening_dangerous_report(new_report, bad_things, user_being_reported, reports_about_user)
         elif bad_thing == FLIRTATION:
             new_report.report_type = ReportType.SEXUAL
-            print("")
+            return sexual_report(new_report, reports_about_user[user_being_reported])
         elif bad_thing == PROFANITY:
             new_report.report_type = ReportType.HARASSMENT_BULLYING
-            print("")
+            return general_harassment_report(user_being_reported, AUTOMATED, [],
+                                             reports_about_user)
         elif bad_thing == IDENTITY_ATTACK:
             new_report.report_type = ReportType.OTHER
-            print("")
-    return "temporary"
+            return general_harassment_report(user_being_reported, AUTOMATED, [],
+                                             reports_about_user)
+    return ""
 

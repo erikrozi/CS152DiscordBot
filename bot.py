@@ -132,7 +132,7 @@ class ModBot(discord.Client):
         scores = self.eval_text(message)
         bad_things = self.check_scores(scores)
         if len(bad_things) > 0:
-            responses = [modFlow.automatic_report(bad_things, message, self)]
+            responses = [modFlow.automatic_report(bad_things, message, self, self.reports_about_user)]
         await mod_channel.send(self.code_format(json.dumps(scores, indent=2)))
         for r in responses:
             await message.channel.send(r)
