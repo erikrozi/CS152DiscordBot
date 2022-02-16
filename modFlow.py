@@ -1,9 +1,19 @@
 # modFlow.py
 from report import Report, ReportType
 from datetime import datetime
+from enum import Enum, auto
 
 user_false_reports = {}
 manager_review_queue = []
+
+
+class PerspectiveBadThing(Enum):
+    SEVERE_TOXICITY = auto()
+    IDENTITY_ATTACK = auto()
+    TOXICITY = auto()
+    FLIRTATION = auto()
+    THREAT = auto()
+    PROFANITY = auto()
 
 
 # TODO: figure out how to remove message.
@@ -111,4 +121,11 @@ def general_harassment_report(user_being_reported, user_making_report, reports_b
         else:
             return "We noticed you have reported many users for harmful content. Please click here if you " \
                               "would like to block non-friends from messaging you for the next 24 hours."
+
+def automatic_report(bad_things, message):
+    # TODO: handle based on report.
+    response = "This message was found to be: "
+    for bad_thing in bad_things:
+        response += bad_thing
+    return response
 

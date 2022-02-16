@@ -127,8 +127,14 @@ class ModBot(discord.Client):
         mod_channel = self.mod_channels[message.guild.id]
         await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
 
+        responses = []
         scores = self.eval_text(message)
+        bad_things = self.check_scores(scores)
+        if len(bad_things) > 0:
+            responses = [modFlow.automatic_report(bad_things, message)]
         await mod_channel.send(self.code_format(json.dumps(scores, indent=2)))
+        for r in responses:
+            await message.channel.send(r)
 
     def eval_text(self, message):
         '''
@@ -158,6 +164,14 @@ class ModBot(discord.Client):
     
     def code_format(self, text):
         return "```" + text + "```"
+
+    def check_scores(self, scores):
+        bad_things = []
+        for key in scores:
+            if scores[key] > .85:
+                bad_things.append(key)
+
+        return bad_things
             
         
 client = ModBot(perspective_key)
