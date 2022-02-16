@@ -1,5 +1,5 @@
 # modFlow.py
-from report import Report, ReportType
+from report import Report, ReportType, State
 from datetime import datetime
 from enum import Enum, auto
 
@@ -7,13 +7,12 @@ user_false_reports = {}
 manager_review_queue = []
 
 
-class PerspectiveBadThing(Enum):
-    SEVERE_TOXICITY = auto()
-    IDENTITY_ATTACK = auto()
-    TOXICITY = auto()
-    FLIRTATION = auto()
-    THREAT = auto()
-    PROFANITY = auto()
+SEVERE_TOXICITY = "SEVERE_TOXICITY"
+IDENTITY_ATTACK = "IDENTITY_ATTACK"
+TOXICITY = "TOXICITY"
+FLIRTATION = "FLIRTATION"
+THREAT = "THREAT"
+PROFANITY = "PROFANITY"
 
 
 # TODO: figure out how to remove message.
@@ -24,7 +23,7 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
     # Check if abuse or not.
     is_abuse = False
     if len(bad_things_list) > 0:
-        is_abuse = 0
+        is_abuse = True
 
     if not is_abuse:
         # Add to false reporting map.
@@ -119,10 +118,30 @@ def general_harassment_report(user_being_reported, user_making_report, reports_b
             return "We noticed you have reported many users for harmful content. Please click here if you " \
                               "would like to block non-friends from messaging you for the next 24 hours."
 
-def automatic_report(bad_things, message):
+def automatic_report(bad_things, message, self):
     # TODO: handle based on report.
-    response = "This message was found to be: "
+    new_report = Report(self)
+    new_report.message = message
+    new_report.state = State.AUTOMATED_REPORT
+
     for bad_thing in bad_things:
-        response += bad_thing
-    return response
+        if bad_thing == SEVERE_TOXICITY:
+            new_report.report_type = ReportType.HARASSMENT_BULLYING
+            print("YO")
+        elif bad_thing == TOXICITY:
+            new_report.report_type = ReportType.HATE_SPEECH
+            print("YO")
+        elif bad_thing == THREAT:
+            new_report.report_type = ReportType.THREATENING_DANGEROUS
+            print("")
+        elif bad_thing == FLIRTATION:
+            new_report.report_type = ReportType.SEXUAL
+            print("")
+        elif bad_thing == PROFANITY:
+            new_report.report_type = ReportType.HARASSMENT_BULLYING
+            print("")
+        elif bad_thing == IDENTITY_ATTACK:
+            new_report.report_type = ReportType.OTHER
+            print("")
+    return "temporary"
 

@@ -9,6 +9,7 @@ class State(Enum):
     REPORT_CANCELLED = auto()
     ABUSE_SPECIFIC_REPORT = auto()
     REPORT_COMPLETE = auto()
+    AUTOMATED_REPORT = auto()
 
 # The types of reports that a user can submit.
 class ReportType(Enum):
