@@ -6,9 +6,12 @@ user_false_reports = {}
 manager_review_queue = []
 
 
+# TODO: figure out how to remove message.
+
+
 def new_report_filed(completed_report, user_being_reported, user_making_report, reports_by_user, reports_about_user):
     # Check if abuse or not.
-    is_abuse = True # TODO: figure out if abuse or not
+    is_abuse = True # TODO: figure out if abuse or not based on perspective scores
 
     if not is_abuse:
         # Add to false reporting map.
@@ -25,18 +28,19 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
     # Determine what type of abuse.
     report_type = completed_report.get_report_type()
     if report_type == ReportType.HARASSMENT_BULLYING:
-        return general_harassment_report("", user_being_reported, user_making_report, reports_by_user, reports_about_user)
+        return general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.SPAM:
         return spam_report(reports_about_user[user_being_reported])
     elif report_type == ReportType.HATE_SPEECH:
-        response = hate_speech_report(completed_report)
-        return general_harassment_report(response, user_being_reported, user_making_report, reports_by_user, reports_about_user)
+        return "Some forms of hate speech can be legally prosecuted, including libel. Please see these resources " \
+                   "to see how you could potentially hold your abusers accountable under the law. " + \
+               general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.THREATENING_DANGEROUS:
         return threatening_dangerous_report(completed_report)
     elif report_type == ReportType.SEXUAL:
         return sexual_report(completed_report, reports_about_user[user_being_reported])
     else: # Other
-        return general_harassment_report("", user_being_reported, user_making_report, reports_by_user, reports_about_user)
+        return general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
 
 
 def spam_report(reports_about_user_list):
@@ -49,20 +53,18 @@ def spam_report(reports_about_user_list):
     if spam_count > 30:
         return "Your account has been banned due to too many spam messages."
     else:
-        # TODO: figure out how to remove message.
         return "Your post has marked as spam and has been removed. Please email us if you think we made a mistake."
 
 
 def sexual_report(report, reports_about_user_list):
-    # TODO: check if post is CSAM
+    # TODO: check if post is CSAM based on perspective scores
     is_CSAM = False
 
     if is_CSAM:
         manager_review_queue.append(report)
-        # TODO: remove post.
         return "Your account has been banned due to child sexual material."
     else:
-        check_if_have_3_strikes(reports_about_user_list)
+        return check_if_have_3_strikes(reports_about_user_list)
 
 
 def check_if_have_3_strikes(reports):
@@ -78,34 +80,13 @@ def check_if_have_3_strikes(reports):
 
 
 def threatening_dangerous_report(report):
-    who_targeting = "self" # TODO: determine who is targeting
+    #TODO: check perspective scores and only add to queue if above threshold.
+    manager_review_queue.append(report) # For chance of terrorism.
 
-    if who_targeting == "self":
-        return "Your post has been removed due to threatening behavior. Please see the below mental health resources " \
-               "and call lines."
-    elif who_targeting == "user":
-        return "Your account has been banned for 24 hours due to threatening behavior. Please email us if you think " \
-               "we made a mistake."
-    else:
-        is_terrorism = False # TODO: determine if terrorism
-        if is_terrorism:
-            manager_review_queue.append(report)
-            return "Your account has been banned due to terrorism material."
-        else:
-            return "Your account has been banned for 24 hours due to threatening behavior. Please email us if you " \
-                   "think we made a mistake."
+    return "Your account has been banned for 24 hours due to threatening behavior. Please see the below mental " \
 
 
-def hate_speech_report(report):
-    is_protected_group = False # TODO: determine if protected group
-    if is_protected_group:
-        # TODO: Remove post. Block user from messaging this user permanently.
-        return "Some forms of hate speech can be legally prosecuted, including libel. Please see these resources " \
-                   "to see how you could potentially hold your abusers accountable under the law. "
-    return ""
-
-
-def general_harassment_report(response, user_being_reported, user_making_report, reports_by_user, reports_about_user):
+def general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user):
     # Find number of reports the user had made in last 24 hours, and number of different people they have reported.
     num_reports_by_user_in_last_24_hours = 0
     users_being_reported_last_24_hours = []
@@ -118,19 +99,16 @@ def general_harassment_report(response, user_being_reported, user_making_report,
                 users_being_reported_last_24_hours.append(users_being_reported_last_24_hours)
 
     if num_reports_by_user_in_last_24_hours == 0:
-        check_if_have_3_strikes(reports_about_user[user_being_reported])
+        return check_if_have_3_strikes(reports_about_user[user_being_reported])
     else:
         number_users_being_reported = len(users_being_reported_last_24_hours)
         if number_users_being_reported == 1:
-            # TODO: block user from sending messages to this user for 24 hours. Make user re-verify identity.
-            check_if_have_3_strikes(reports_about_user[user_being_reported])
+            return check_if_have_3_strikes(reports_about_user[user_being_reported])
         elif number_users_being_reported > 5:
-            # TODO: Allow user to block non-friends from messaging them for 24 hours.
-            return response + "We noticed you have reported many users for harmful content. Please click here if you " \
+            return "We noticed you have reported many users for harmful content. Please click here if you " \
                               "would like to block non-friends from messaging you for the next 24 hours. Please " \
                               "contact us if you think this block should be extended for more than 24 hours."
         else:
-            # TODO: Allow user to block non-friends from messaging them for 24 hours.
-            return response + "We noticed you have reported many users for harmful content. Please click here if you " \
+            return "We noticed you have reported many users for harmful content. Please click here if you " \
                               "would like to block non-friends from messaging you for the next 24 hours."
 
