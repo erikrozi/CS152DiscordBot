@@ -19,9 +19,12 @@ class PerspectiveBadThing(Enum):
 # TODO: figure out how to remove message.
 
 
-def new_report_filed(completed_report, user_being_reported, user_making_report, reports_by_user, reports_about_user):
+def new_report_filed(completed_report, user_being_reported, user_making_report, reports_by_user, reports_about_user,
+                     bad_things_list):
     # Check if abuse or not.
-    is_abuse = True # TODO: figure out if abuse or not based on perspective scores
+    is_abuse = False
+    if len(bad_things_list) > 0:
+        is_abuse = 0
 
     if not is_abuse:
         # Add to false reporting map.
@@ -46,7 +49,7 @@ def new_report_filed(completed_report, user_being_reported, user_making_report, 
                    "to see how you could potentially hold your abusers accountable under the law. " + \
                general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user)
     elif report_type == ReportType.THREATENING_DANGEROUS:
-        return threatening_dangerous_report(completed_report)
+        return threatening_dangerous_report(completed_report, bad_things_list)
     elif report_type == ReportType.SEXUAL:
         return sexual_report(completed_report, reports_about_user[user_being_reported])
     else: # Other
@@ -67,14 +70,8 @@ def spam_report(reports_about_user_list):
 
 
 def sexual_report(report, reports_about_user_list):
-    # TODO: check if post is CSAM based on perspective scores
-    is_CSAM = False
-
-    if is_CSAM:
-        manager_review_queue.append(report)
-        return "Your account has been banned due to child sexual material."
-    else:
-        return check_if_have_3_strikes(reports_about_user_list)
+    manager_review_queue.append(report) # To check if CSAM.
+    return check_if_have_3_strikes(reports_about_user_list)
 
 
 def check_if_have_3_strikes(reports):
@@ -89,9 +86,9 @@ def check_if_have_3_strikes(reports):
         return "Your post has marked as offensive and has been removed. Please email us if you think we made a mistake."
 
 
-def threatening_dangerous_report(report):
-    #TODO: check perspective scores and only add to queue if above threshold.
-    manager_review_queue.append(report) # For chance of terrorism.
+def threatening_dangerous_report(report, bad_things_list):
+    if "THREAT" is bad_things_list:
+        manager_review_queue.append(report) # For chance of terrorism.
 
     return "Your account has been banned for 24 hours due to threatening behavior. Please see the below mental " \
 

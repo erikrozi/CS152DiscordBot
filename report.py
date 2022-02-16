@@ -150,6 +150,8 @@ class Report:
     def get_report_type(self):
         return self.report_type
 
+    def get_message(self):
+        return self.message
 
     
 

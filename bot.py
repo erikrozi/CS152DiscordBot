@@ -112,7 +112,8 @@ class ModBot(discord.Client):
             self.reports_about_user[user_being_reported].append(completed_report)
 
             responses += [modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
-                                     self.reports_by_user, self.reports_about_user)]
+                                     self.reports_by_user, self.reports_about_user,
+                                                   self.check_scores(self.eval_text(completed_report.get_message())))]
 
         for r in responses:
             await message.channel.send(r)
