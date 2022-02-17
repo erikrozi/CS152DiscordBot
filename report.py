@@ -337,19 +337,25 @@ class Report:
         if self.state == State.EXIT_ABUSE_BRANCH:
             reply = "Are there other harmful messages from this user or similar harmful messages from other users " \
                     "that you'd also like to report?\n\n"
-            reply += "'Yes'\n"
-            reply += "'No'\n"
+            reply += "Please respond with 'Yes' or 'No'\n"
             self.state = State.FINAL_PROMPT
             return [reply]
 
         if self.state == State.FINAL_PROMPT:
-            self.state = State.REPORT_COMPLETE
             if message.content == self.END_REPORT_KEYWORD:
+                self.state = State.REPORT_COMPLETE
                 reply = "Thank you for taking the time to report this. We know that interacting with this content can" \
                         " be harmful. Here are some mental health resources for you: <NOTE PUT LINKS HERE>\n\n"
                 return[reply]
             elif message.content == self.SUBMIT_ANOTHER_REPORT_KEYWORD:
+                self.state = State.REPORT_COMPLETE
                 reply = "Please say 'report' to continue reporting the message(s).\n"
+                return [reply]
+            else:
+                reply = "Are there other harmful messages from this user or similar harmful messages from other users " \
+                        "that you'd also like to report?\n\n"
+                reply += "Please respond with 'Yes' or 'No'\n"
+                self.state = State.FINAL_PROMPT
                 return [reply]
         return []
 
