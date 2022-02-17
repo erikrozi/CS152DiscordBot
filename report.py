@@ -108,6 +108,7 @@ class Report:
             reply += "Reply with the number corresponding to the correct reason.\n\n"
             reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
             reply += "5: Sexual offensive content\n6: Other\n"
+            self.state = State.REPORT_IDENTIFIED
             self.message = message
             return [reply]
 
@@ -120,7 +121,6 @@ class Report:
             return [reply]
 
         if message.content == self.SPAM_FRAUD_KEYWORD:
-            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.SPAM
             self.state = State.START_OF_SPAM_BRANCH
             reply = "Please elaborate how this message is spam/fraud.\n\n"
@@ -154,7 +154,6 @@ class Report:
                 return [reply]
 
         if message.content == self.HATE_SPEECH_KEYWORD:
-            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.HATE_SPEECH
             self.state = State.START_OF_HATE_SPEECH_BRANCH
             reply = "Who is the user targeting?\n\n"
@@ -198,7 +197,6 @@ class Report:
                 return [reply]
 
         if message.content == self.HARASSMENT_BULLYING_KEYWORD:
-            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.HARASSMENT_BULLYING
             self.state = State.START_OF_HARASSMENT_BULLYING_BRANCH
             reply = "Who is the user targeting?\n\n"
@@ -242,7 +240,6 @@ class Report:
                 return [reply]
 
         if message.content == self.THREATENING_DANGEROUS_KEYWORD:
-            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.THREATENING_DANGEROUS
             self.state = State.START_OF_THREATENING_DANGEROUS_BRANCH
             reply = "Who is the being threatened or in danger?\n\n"
@@ -292,7 +289,6 @@ class Report:
                 return [reply]
 
         if message.content == self.SEXUAL_KEYWORD:
-            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.SEXUAL
             self.state = State.START_OF_SEXUAL_BRANCH
             reply = "Is this child sexual abuse material?\n\n"
@@ -330,7 +326,6 @@ class Report:
                 return [reply]
 
         if message.content == self.OTHER_KEYWORD:
-            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.OTHER
             reply = "To improve your experience, would you like to block or mute this account?\n"
             reply += "'Mute'\n"
