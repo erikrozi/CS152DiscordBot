@@ -96,15 +96,25 @@ class Report:
             self.state = State.START_OF_SPAM_BRANCH
             self.spam_branch(self.message)
 
-            # reply = "Please elaborate how this message is spam/fraud.\n\n"
-            # reply += "Reply with the number corresponding to the correct reason.\n\n"
-            # reply += "1: This message is from a fake/spam account.\n"
-            # reply += "2: This account is repeatedly sending you unwanted messages."
-            # return [reply]
+            reply = "Please elaborate how this message is spam/fraud.\n\n"
+            reply += "Reply with the number corresponding to the correct reason.\n\n"
+            reply += "1: This message is from a fake/spam account.\n"
+            reply += "2: This account is repeatedly sending you unwanted messages."
+            return [reply]
 
-        # if message.content == self.SPAM_OPTION_ONE_KEYWORD:
-        #     reply = "Thank you for reporting this. Our moderation team with investigate this account.\n"
-        #     return [reply]
+        if self.state == State.START_OF_SPAM_BRANCH:
+            if message.content == self.SPAM_OPTION_ONE_KEYWORD:
+                reply = "Thank you for reporting this. Our moderation team will investigate this account.\n"
+                return [reply]
+            elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
+                reply = "We're sorry to hear that.\n"
+                return [reply]
+        
+            reply = "Would you like to block or mute this account?\n"
+            reply += "1: Mute\n"
+            reply += "2: Block\n"
+            return [reply]
+
 
         if message.content == self.HATE_SPEECH_KEYWORD:
             self.report_type = ReportType.HATE_SPEECH
@@ -113,7 +123,7 @@ class Report:
             reply += "1: Me\n"
             reply += "2: Someone else\n"
             reply += "3: A group of people\n"
-            print(reply)
+            return [reply]
 
         if message.content == self.HARASSMENT_BULLYING_KEYWORD:
             self.report_type = ReportType.HARASSMENT_BULLYING
