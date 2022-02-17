@@ -113,14 +113,14 @@ class Report:
             return [reply]
 
         # If an incorrect keyword was put in, reprompt the user with the correct keywords
-        if message.content not in self.abuseTypeKeyWords:
+        if message.content not in self.abuseTypeKeyWords and self.state == State.REPORT_IDENTIFIED:
             reply = "Which of the following categories best describes this message:\n"
             reply += "Reply with the number corresponding to the correct reason.\n\n"
             reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
             reply += "5: Sexual offensive content\n6: Other\n"
             return [reply]
 
-        if message.content == self.SPAM_FRAUD_KEYWORD:
+        if message.content == self.SPAM_FRAUD_KEYWORD and self.state == State.REPORT_IDENTIFIED:
             self.report_type = ReportType.SPAM
             self.state = State.START_OF_SPAM_BRANCH
             reply = "Please elaborate how this message is spam/fraud.\n\n"
@@ -153,7 +153,7 @@ class Report:
                 reply += "1b: This account is repeatedly sending you unwanted messages.\n"
                 return [reply]
 
-        if message.content == self.HATE_SPEECH_KEYWORD:
+        if message.content == self.HATE_SPEECH_KEYWORD and self.state == State.REPORT_IDENTIFIED:
             self.report_type = ReportType.HATE_SPEECH
             self.state = State.START_OF_HATE_SPEECH_BRANCH
             reply = "Who is the user targeting?\n\n"
@@ -196,7 +196,7 @@ class Report:
                 reply += "2c: A group of people\n"
                 return [reply]
 
-        if message.content == self.HARASSMENT_BULLYING_KEYWORD:
+        if message.content == self.HARASSMENT_BULLYING_KEYWORD and self.state == State.REPORT_IDENTIFIED:
             self.report_type = ReportType.HARASSMENT_BULLYING
             self.state = State.START_OF_HARASSMENT_BULLYING_BRANCH
             reply = "Who is the user targeting?\n\n"
@@ -239,7 +239,7 @@ class Report:
                 reply += "3c: A group of people\n"
                 return [reply]
 
-        if message.content == self.THREATENING_DANGEROUS_KEYWORD:
+        if message.content == self.THREATENING_DANGEROUS_KEYWORD and self.state == State.REPORT_IDENTIFIED:
             self.report_type = ReportType.THREATENING_DANGEROUS
             self.state = State.START_OF_THREATENING_DANGEROUS_BRANCH
             reply = "Who is the being threatened or in danger?\n\n"
@@ -288,7 +288,7 @@ class Report:
                 reply += "4c: The user is threatening to or appears to be at risk of harming others\n"
                 return [reply]
 
-        if message.content == self.SEXUAL_KEYWORD:
+        if message.content == self.SEXUAL_KEYWORD and self.state == State.REPORT_IDENTIFIED:
             self.report_type = ReportType.SEXUAL
             self.state = State.START_OF_SEXUAL_BRANCH
             reply = "Is this child sexual abuse material?\n\n"
@@ -325,7 +325,7 @@ class Report:
                 reply += "5b: No\n"
                 return [reply]
 
-        if message.content == self.OTHER_KEYWORD:
+        if message.content == self.OTHER_KEYWORD and self.state == State.REPORT_IDENTIFIED:
             self.report_type = ReportType.OTHER
             reply = "To improve your experience, would you like to block or mute this account?\n"
             reply += "'Mute'\n"
