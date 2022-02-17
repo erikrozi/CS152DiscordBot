@@ -123,16 +123,18 @@ class Report:
         if self.state == State.START_OF_SPAM_BRANCH:
             if message.content == self.SPAM_OPTION_ONE_KEYWORD:
                 reply = "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
-                reply += "Would you like to block or mute this account?\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
+                reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
                 reply = "We're sorry to hear that.\n"
-                reply += "Would you like to block or mute this account?\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
+                reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
 
@@ -154,9 +156,10 @@ class Report:
             elif message.content == self.HATE_SPEECH_OPTION_THREE_KEYWORD:
                 pass
             reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
-            reply += "Would you like to block or mute this account?\n"
+            reply = "To improve your experience, would you like to block or mute this account?\n"
             reply += "'Mute'\n"
             reply += "'Block'\n"
+            reply += "'No thanks'\n"
             self.state = State.EXIT_ABUSE_BRANCH
             return [reply]
 
@@ -178,9 +181,10 @@ class Report:
             elif message.content == self.HARASSMENT_BULLYING_OPTION_THREE_KEYWORD:
                 pass
             reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
-            reply += "Would you like to block or mute this account?\n"
+            reply = "To improve your experience, would you like to block or mute this account?\n"
             reply += "'Mute'\n"
             reply += "'Block'\n"
+            reply += "'No thanks'\n"
             self.state = State.EXIT_ABUSE_BRANCH
             return [reply]
 
@@ -199,27 +203,30 @@ class Report:
                 reply = "Thank you for reporting this. Our moderation team will investigate this. If deemed " \
                         "appropriate, we will remove the post and may work with law enforcement to investigate this " \
                         "further.\n\n"
-                reply += "Would you like to block or mute this account?\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
+                reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
             elif message.content == self.THREATENING_DANGEROUS_OPTION_TWO_KEYWORD:
                 reply = "Thank you for reporting this. Our moderation team will investigate this. If deemed " \
                         "appropriate, we will remove the post and will provide mental health support and resources " \
                         "to the user.\n\n"
-                reply += "Would you like to block or mute this account?\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
+                reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
             elif message.content == self.THREATENING_DANGEROUS_OPTION_THREE_KEYWORD:
                 reply = "Thank you for reporting this. Our moderation team will investigate this and remove the post" \
                         "and work with law enforcement to determine the consequence for this account if deemed " \
                         "appropriate.\n\n"
-                reply += "Would you like to block or mute this account?\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
+                reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
 
@@ -228,28 +235,43 @@ class Report:
             self.state = State.START_OF_SEXUAL_BRANCH
             reply = "Is this child sexual abuse material?\n\n"
             reply += "Reply with the number corresponding to the correct reason.\n\n"
-            reply += "5a: Yes"
-            reply += "5b: No"
+            reply += "5a: Yes\n"
+            reply += "5b: No\n"
             return [reply]
 
         if self.state == State.START_OF_SEXUAL_BRANCH:
             if message.content == self.SEXUAL_OPTION_ONE_KEYWORD:
-                pass
+                reply = "Thank you for reporting this. Our moderation team will investigate this and remove the post" \
+                        "and work with law enforcement to determine the consequence for this account if deemed " \
+                        "appropriate.\n\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
             elif message.content == self.SEXUAL_OPTION_TWO_KEYWORD:
-                pass
-            reply = "Thank you for reporting this. Our moderation team will investigate this and remove the post" \
-                    "and work with law enforcement to determine the consequence for this account if deemed " \
-                    "appropriate.\n\n"
-            reply += "Would you like to block or mute this account?\n"
-            reply += "'Mute'\n"
-            reply += "'Block'\n"
-            self.state = State.EXIT_ABUSE_BRANCH
+                reply = "Thank you for reporting this. Our moderation team will investigate this and remove the post" \
+                        "and work with law enforcement to determine the consequence for this account if deemed " \
+                        "appropriate.\n\n"
+                reply = "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
+            else:
+                reply = "Please reply with the number corresponding to the correct reason.\n\n"
+                reply += "5a: Yes\n"
+                reply += "5b: No\n"
+                return [reply]
 
         if message.content == self.OTHER_KEYWORD:
             self.report_type = ReportType.OTHER
-            reply = "Would you like to block or mute this account?\n"
+            reply = "To improve your experience, would you like to block or mute this account?\n"
             reply += "'Mute'\n"
             reply += "'Block'\n"
+            reply += "'No thanks'\n"
             self.state = State.EXIT_ABUSE_BRANCH
             return [reply]
 
@@ -264,7 +286,7 @@ class Report:
             self.state = State.REPORT_COMPLETE
             if message.content == self.END_REPORT_KEYWORD:
                 reply = "Thank you for taking the time to report this. We know that interacting with this content can" \
-                        " be harmful. Here are some mental health resources for you: <NOTE PUT LINKS HERE>\n"
+                        " be harmful. Here are some mental health resources for you: <NOTE PUT LINKS HERE>\n\n"
                 return[reply]
             elif message.content == self.SUBMIT_ANOTHER_REPORT_KEYWORD:
                 reply = "Please say 'report' to continue reporting the message(s).\n"
@@ -286,4 +308,4 @@ class Report:
     def get_message(self):
         return self.message
 
-    
+
