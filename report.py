@@ -114,8 +114,8 @@ class Report:
 
         # If an incorrect keyword was put in, reprompt the user with the correct keywords
         if message.content not in self.abuseTypeKeyWords and self.state == State.REPORT_IDENTIFIED:
-            reply = "Which of the following categories best describes this message:\n"
-            reply += "Reply with the number corresponding to the correct reason.\n\n"
+            reply = "Reply with the number corresponding to the correct reason.\n"
+            reply += "Which of the following categories best describes this message:\n\n"
             reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
             reply += "5: Sexual offensive content\n6: Other\n"
             return [reply]
@@ -337,7 +337,8 @@ class Report:
         if self.state == State.EXIT_ABUSE_BRANCH:
             reply = "Are there other harmful messages from this user or similar harmful messages from other users " \
                     "that you'd also like to report?\n\n"
-            reply += "Please respond with: 'Yes' or 'No'\n"
+            reply += "'Yes'\n"
+            reply += "'No'\n"
             self.state = State.FINAL_PROMPT
             return [reply]
 
