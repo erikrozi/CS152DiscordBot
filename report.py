@@ -94,7 +94,7 @@ class Report:
         if message.content == self.SPAM_FRAUD_KEYWORD:
             self.report_type = ReportType.SPAM
             self.state = State.START_OF_SPAM_BRANCH
-            self.spam_branch()
+            self.spam_branch(self, self.message)
 
             # reply = "Please elaborate how this message is spam/fraud.\n\n"
             # reply += "Reply with the number corresponding to the correct reason.\n\n"
