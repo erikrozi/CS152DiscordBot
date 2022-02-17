@@ -7,8 +7,8 @@ class State(Enum):
     AWAITING_MESSAGE = auto()
     REPORT_IDENTIFIED = auto()
     REPORT_CANCELLED = auto()
-
     START_OF_SPAM_BRANCH = auto()
+    BLOCK_AND_MUTE_PROMPT = auto()
     ABUSE_SPECIFIC_REPORT = auto()
     REPORT_COMPLETE = auto()
     AUTOMATED_REPORT = auto()
@@ -32,8 +32,6 @@ class Report:
     THREATENING_DANGEROUS_KEYWORD = "4"
     SEXUAL_KEYWORD = "5"
     OTHER_KEYWORD = "6"
-
-
     SPAM_OPTION_ONE_KEYWORD = "1"
     SPAM_OPTION_TWO_KEYWORD = "2"
 
@@ -92,24 +90,25 @@ class Report:
             return [reply]
 
         if message.content == self.SPAM_FRAUD_KEYWORD:
-            self.report_type = ReportType.SPAM
-            self.state = State.START_OF_SPAM_BRANCH
-            self.spam_branch(self.message)
-
             reply = "Please elaborate how this message is spam/fraud.\n\n"
             reply += "Reply with the number corresponding to the correct reason.\n\n"
             reply += "1: This message is from a fake/spam account.\n"
-            reply += "2: This account is repeatedly sending you unwanted messages."
+            reply += "2: This account is repeatedly sending you unwanted messages.\n"
+            self.report_type = ReportType.SPAM
+            self.state = State.START_OF_SPAM_BRANCH
             return [reply]
 
         if self.state == State.START_OF_SPAM_BRANCH:
+            return ["Correctly went to the next level of spam branch\n"]
+            self.state = State.BLOCK_AND_MUTE_PROMPT
             if message.content == self.SPAM_OPTION_ONE_KEYWORD:
                 reply = "Thank you for reporting this. Our moderation team will investigate this account.\n"
                 return [reply]
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
                 reply = "We're sorry to hear that.\n"
                 return [reply]
-        
+
+        if self.state == State.BLOCK_AND_MUTE_PROMPT:
             reply = "Would you like to block or mute this account?\n"
             reply += "1: Mute\n"
             reply += "2: Block\n"
