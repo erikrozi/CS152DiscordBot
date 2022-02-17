@@ -99,8 +99,8 @@ class Report:
             return [reply]
 
         if self.state == State.START_OF_SPAM_BRANCH:
-            return ["Correctly went to the next level of spam branch\n"]
             self.state = State.BLOCK_AND_MUTE_PROMPT
+            # return ["Correctly went to the next level of spam branch\n"]
             if message.content == self.SPAM_OPTION_ONE_KEYWORD:
                 reply = "Thank you for reporting this. Our moderation team will investigate this account.\n"
                 return [reply]
