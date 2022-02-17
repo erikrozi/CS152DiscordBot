@@ -62,6 +62,8 @@ class Report:
         self.client = client
         self.message = None
         self.report_type = None
+        self.abuseTypeKeyWords = [self.SPAM_FRAUD_KEYWORD, self.HATE_SPEECH_KEYWORD, self.HARASSMENT_BULLYING_KEYWORD,
+                                  self.THREATENING_DANGEROUS_KEYWORD, self.SEXUAL_KEYWORD, self.OTHER_KEYWORD]
     
     async def handle_message(self, message):
         '''
@@ -107,11 +109,18 @@ class Report:
             reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
             reply += "5: Sexual offensive content\n6: Other\n"
             self.message = message
-            self.report_type = ReportType.OTHER  # This is just temporary for testing.
-            self.state = State.REPORT_IDENTIFIED
+            return [reply]
+
+        # If an incorrect keyword was put in, reprompt the user with the correct keywords
+        if message.content not in self.abuseTypeKeyWords:
+            reply = "Which of the following categories best describes this message:\n"
+            reply += "Reply with the number corresponding to the correct reason.\n\n"
+            reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
+            reply += "5: Sexual offensive content\n6: Other\n"
             return [reply]
 
         if message.content == self.SPAM_FRAUD_KEYWORD:
+            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.SPAM
             self.state = State.START_OF_SPAM_BRANCH
             reply = "Please elaborate how this message is spam/fraud.\n\n"
@@ -137,8 +146,15 @@ class Report:
                 reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
+            else:
+                # If an incorrect keyword was put in, reprompt the user with the correct keywords
+                reply = "Please reply with the number corresponding to the correct reason.\n\n"
+                reply += "1a: This message is from a fake/spam account.\n"
+                reply += "1b: This account is repeatedly sending you unwanted messages.\n"
+                return [reply]
 
         if message.content == self.HATE_SPEECH_KEYWORD:
+            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.HATE_SPEECH
             self.state = State.START_OF_HATE_SPEECH_BRANCH
             reply = "Who is the user targeting?\n\n"
@@ -150,20 +166,39 @@ class Report:
 
         if self.state == State.START_OF_HATE_SPEECH_BRANCH:
             if message.content == self.HATE_SPEECH_OPTION_ONE_KEYWORD:
-                pass
+                reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
             elif message.content == self.HATE_SPEECH_OPTION_TWO_KEYWORD:
-                pass
+                reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
             elif message.content == self.HATE_SPEECH_OPTION_THREE_KEYWORD:
-                pass
-            reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
-            reply = "To improve your experience, would you like to block or mute this account?\n"
-            reply += "'Mute'\n"
-            reply += "'Block'\n"
-            reply += "'No thanks'\n"
-            self.state = State.EXIT_ABUSE_BRANCH
-            return [reply]
+                reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
+            else:
+                # If an incorrect keyword was put in, reprompt the user with the correct keywords
+                reply = "Please reply with the number corresponding to the correct reason.\n\n"
+                reply += "2a: Me\n"
+                reply += "2b: Someone else\n"
+                reply += "2c: A group of people\n"
+                return [reply]
 
         if message.content == self.HARASSMENT_BULLYING_KEYWORD:
+            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.HARASSMENT_BULLYING
             self.state = State.START_OF_HARASSMENT_BULLYING_BRANCH
             reply = "Who is the user targeting?\n\n"
@@ -175,20 +210,39 @@ class Report:
 
         if self.state == State.START_OF_HARASSMENT_BULLYING_BRANCH:
             if message.content == self.HARASSMENT_BULLYING_OPTION_ONE_KEYWORD:
-                pass
+                reply = "Thank you for reporting this. Our moderation team will investigate this further.\n\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
             elif message.content == self.HARASSMENT_BULLYING_OPTION_TWO_KEYWORD:
-                pass
+                reply = "Thank you for reporting this. Our moderation team will investigate this further.\n\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
             elif message.content == self.HARASSMENT_BULLYING_OPTION_THREE_KEYWORD:
-                pass
-            reply = "Thank you for reporting this. Our moderation team will investigate this further.\n"
-            reply = "To improve your experience, would you like to block or mute this account?\n"
-            reply += "'Mute'\n"
-            reply += "'Block'\n"
-            reply += "'No thanks'\n"
-            self.state = State.EXIT_ABUSE_BRANCH
-            return [reply]
+                reply = "Thank you for reporting this. Our moderation team will investigate this further.\n\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
+                reply += "'No thanks'\n"
+                self.state = State.EXIT_ABUSE_BRANCH
+                return [reply]
+            else:
+                # If an incorrect keyword was put in, reprompt the user with the correct keywords
+                reply = "Please reply with the number corresponding to the correct reason.\n\n"
+                reply += "3a: Me\n"
+                reply += "3b: Someone else\n"
+                reply += "3c: A group of people\n"
+                return [reply]
 
         if message.content == self.THREATENING_DANGEROUS_KEYWORD:
+            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.THREATENING_DANGEROUS
             self.state = State.START_OF_THREATENING_DANGEROUS_BRANCH
             reply = "Who is the being threatened or in danger?\n\n"
@@ -229,8 +283,16 @@ class Report:
                 reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
+            else:
+                # If an incorrect keyword was put in, reprompt the user with the correct keywords
+                reply = "Please reply with the number corresponding to the correct reason.\n\n"
+                reply += "4a: The user is threatening me\n"
+                reply += "4b: The user is threatening or appears to be at risk of harming themselves\n"
+                reply += "4c: The user is threatening to or appears to be at risk of harming others\n"
+                return [reply]
 
         if message.content == self.SEXUAL_KEYWORD:
+            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.SEXUAL
             self.state = State.START_OF_SEXUAL_BRANCH
             reply = "Is this child sexual abuse material?\n\n"
@@ -244,7 +306,7 @@ class Report:
                 reply = "Thank you for reporting this. Our moderation team will investigate this and remove the post" \
                         "and work with law enforcement to determine the consequence for this account if deemed " \
                         "appropriate.\n\n"
-                reply = "To improve your experience, would you like to block or mute this account?\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
                 reply += "'No thanks'\n"
@@ -254,19 +316,21 @@ class Report:
                 reply = "Thank you for reporting this. Our moderation team will investigate this and remove the post" \
                         "and work with law enforcement to determine the consequence for this account if deemed " \
                         "appropriate.\n\n"
-                reply = "To improve your experience, would you like to block or mute this account?\n"
+                reply += "To improve your experience, would you like to block or mute this account?\n"
                 reply += "'Mute'\n"
                 reply += "'Block'\n"
                 reply += "'No thanks'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
             else:
+                # If an incorrect keyword was put in, reprompt the user with the correct keywords
                 reply = "Please reply with the number corresponding to the correct reason.\n\n"
                 reply += "5a: Yes\n"
                 reply += "5b: No\n"
                 return [reply]
 
         if message.content == self.OTHER_KEYWORD:
+            self.state = State.REPORT_IDENTIFIED
             self.report_type = ReportType.OTHER
             reply = "To improve your experience, would you like to block or mute this account?\n"
             reply += "'Mute'\n"
@@ -277,8 +341,8 @@ class Report:
 
         if self.state == State.EXIT_ABUSE_BRANCH:
             reply = "Are there other harmful messages from this user or similar harmful messages from other users " \
-                    "that you'd also like to report?\n"
-            reply += "Please respond with: 'Yes' or 'No'"
+                    "that you'd also like to report?\n\n"
+            reply += "Please respond with: 'Yes' or 'No'\n"
             self.state = State.FINAL_PROMPT
             return [reply]
 
