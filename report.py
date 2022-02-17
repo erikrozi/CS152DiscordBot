@@ -8,7 +8,8 @@ class State(Enum):
     REPORT_IDENTIFIED = auto()
     REPORT_CANCELLED = auto()
     START_OF_SPAM_BRANCH = auto()
-    BLOCK_AND_MUTE_PROMPT = auto()
+    EXIT_ABUSE_BRANCH = auto()
+    FINAL_PROMPT = auto()
     ABUSE_SPECIFIC_REPORT = auto()
     REPORT_COMPLETE = auto()
     AUTOMATED_REPORT = auto()
@@ -34,6 +35,8 @@ class Report:
     OTHER_KEYWORD = "6"
     SPAM_OPTION_ONE_KEYWORD = "1a"
     SPAM_OPTION_TWO_KEYWORD = "1b"
+    END_REPORT_KEYWORD = "No"
+    SUBMIT_ANOTHER_REPORT_KEYWORD = "Yes"
 
 
 
@@ -99,20 +102,20 @@ class Report:
             return [reply]
 
         if self.state == State.START_OF_SPAM_BRANCH:
-            self.state = State.BLOCK_AND_MUTE_PROMPT
-            # return ["Correctly went to the next level of spam branch\n"]
             if message.content == self.SPAM_OPTION_ONE_KEYWORD:
-                reply = "Thank you for reporting this. Our moderation team will investigate this account.\n"
+                reply = "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
+                reply += "Would you like to block or mute this account?\n"
+                reply += "1: Mute\n"
+                reply += "2: Block\n"
+                self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
                 reply = "We're sorry to hear that.\n"
+                reply += "Would you like to block or mute this account?\n"
+                reply += "1: Mute\n"
+                reply += "2: Block\n"
+                self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
-
-        if self.state == State.BLOCK_AND_MUTE_PROMPT:
-            reply = "Would you like to block or mute this account?\n"
-            reply += "1: Mute\n"
-            reply += "2: Block\n"
-            return [reply]
 
 
         if message.content == self.HATE_SPEECH_KEYWORD:
@@ -156,16 +159,21 @@ class Report:
             # if yes, call handle_message
             return [reply]
 
-        # if self.report_type == ReportType.SPAM:
-        #     reply = ""
-        #     if message.content == self.SPAM_OPTION_ONE_KEYWORD:
-        #         reply += "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
-        #         reply += "Would you like to block or mute this account?\n"
-        #     elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
-        #         reply += "Would you like to block or mute this account?\n"
-        #     self.state = State.REPORT_COMPLETE #NOTE: This is a placeholder! The final report won't finish here
-        #     return [reply]
+        if self.state == State.EXIT_ABUSE_BRANCH:
+            reply = "Are there other harmful messages from this user or similar harmful messages from other users that " \
+                    "you'd also like to report?\n"
+            reply += "Please respond with: 'Yes' or 'No'"
+            return [reply]
 
+        if self.state == State.FINAL_PROMPT:
+            self.state = State.REPORT_COMPLETE
+            if message.content == self.END_REPORT_KEYWORD:
+                reply = "Thank you for taking the time to report this. We know that interacting with this content can" \
+                        " be harmful. Here are some mental health resources for you: <NOTE PUT LINKS HERE>\n"
+                return[reply]
+            elif message.content == self.SUBMIT_ANOTHER_REPORT_KEYWORD:
+                reply = "Please say 'report' to continue reporting the message(s).\n"
+                return [reply]
         return []
 
     def spam_branch(self, message):
