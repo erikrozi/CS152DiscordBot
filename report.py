@@ -32,8 +32,8 @@ class Report:
     THREATENING_DANGEROUS_KEYWORD = "4"
     SEXUAL_KEYWORD = "5"
     OTHER_KEYWORD = "6"
-    SPAM_OPTION_ONE_KEYWORD = "1"
-    SPAM_OPTION_TWO_KEYWORD = "2"
+    SPAM_OPTION_ONE_KEYWORD = "1a"
+    SPAM_OPTION_TWO_KEYWORD = "1b"
 
 
 
@@ -92,8 +92,8 @@ class Report:
         if message.content == self.SPAM_FRAUD_KEYWORD:
             reply = "Please elaborate how this message is spam/fraud.\n\n"
             reply += "Reply with the number corresponding to the correct reason.\n\n"
-            reply += "1: This message is from a fake/spam account.\n"
-            reply += "2: This account is repeatedly sending you unwanted messages.\n"
+            reply += "1a: This message is from a fake/spam account.\n"
+            reply += "1b: This account is repeatedly sending you unwanted messages.\n"
             self.report_type = ReportType.SPAM
             self.state = State.START_OF_SPAM_BRANCH
             return [reply]
