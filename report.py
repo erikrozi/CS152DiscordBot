@@ -103,7 +103,7 @@ class Report:
                 return ["It seems this message was deleted or never existed. Please try again or say `cancel` to "
                         "cancel."]
 
-            reply = "Help us understand the problem with this message."
+            reply = "Help us understand the problem with this message. "
             reply += "Which of the following categories best describes this message:\n\n"
             reply += "Reply with the number corresponding to the correct reason.\n\n"
             reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
@@ -114,7 +114,7 @@ class Report:
 
         # If an incorrect keyword was put in, reprompt the user with the correct keywords
         if message.content not in self.abuseTypeKeyWords and self.state == State.REPORT_IDENTIFIED:
-            reply = "Reply with the number corresponding to the correct reason.\n\n"
+            reply = "Reply with the number corresponding to the correct reason. \n\n"
             reply += "Which of the following categories best describes this message?\n\n"
             reply += "1: Spam/fraud\n2: Hate speech\n3: Harassment/bullying\n4: Threatening/dangerous behavior\n"
             reply += "5: Sexual offensive content\n6: Other\n"
