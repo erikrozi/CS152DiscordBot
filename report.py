@@ -105,8 +105,8 @@ class Report:
             if message.content == self.SPAM_OPTION_ONE_KEYWORD:
                 reply = "Thank you for reporting this. Our moderation team will investigate this account.\n\n"
                 reply += "Would you like to block or mute this account?\n"
-                reply += "1: Mute\n"
-                reply += "2: Block\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
