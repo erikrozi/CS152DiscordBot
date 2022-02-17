@@ -37,8 +37,8 @@ class Report:
     SPAM_OPTION_TWO_KEYWORD = "1b"
     END_REPORT_KEYWORD = "No"
     SUBMIT_ANOTHER_REPORT_KEYWORD = "Yes"
-
-
+    MUTE_KEYWORD = "Mute"
+    BLOCK_KEYWORD = "Block"
 
     def __init__(self, client):
         self.state = State.REPORT_START
@@ -112,8 +112,8 @@ class Report:
             elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
                 reply = "We're sorry to hear that.\n"
                 reply += "Would you like to block or mute this account?\n"
-                reply += "1: Mute\n"
-                reply += "2: Block\n"
+                reply += "'Mute'\n"
+                reply += "'Block'\n"
                 self.state = State.EXIT_ABUSE_BRANCH
                 return [reply]
 
@@ -163,6 +163,7 @@ class Report:
             reply = "Are there other harmful messages from this user or similar harmful messages from other users that " \
                     "you'd also like to report?\n"
             reply += "Please respond with: 'Yes' or 'No'"
+            self.state = State.FINAL_PROMPT
             return [reply]
 
         if self.state == State.FINAL_PROMPT:
@@ -175,29 +176,6 @@ class Report:
                 reply = "Please say 'report' to continue reporting the message(s).\n"
                 return [reply]
         return []
-
-    def spam_branch(self, message):
-        if self.state == State.START_OF_SPAM_BRANCH:
-            # 2 Prompt Spam (2PSpam)
-            reply = "Please elaborate how this message is spam/fraud.\n\n"
-            reply += "Reply with the number corresponding to the correct reason.\n\n"
-            reply += "1: This message is from a fake/spam account.\n"
-            reply += "2: This account is repeatedly sending you unwanted messages."
-            return [reply]
-
-        # 2 Response Spam (2RS)
-        if message.content == self.SPAM_OPTION_ONE_KEYWORD:
-            reply = "Thank you for reporting this. Our moderation team will investigate this account.\n"
-            return [reply]
-        elif message.content == self.SPAM_OPTION_TWO_KEYWORD:
-            reply = "We're sorry to hear that.\n"
-            return [reply]
-
-        reply = "Would you like to block or mute this account?\n"
-        reply += "1: Mute\n"
-        reply += "2: Block\n"
-        return [reply]
-
 
     def get_user_being_reported(self):
         return self.message.author.id
