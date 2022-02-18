@@ -362,6 +362,9 @@ class Report:
     def get_user_being_reported(self):
         return self.message.author.id
 
+    def get_user_being_reported_name(self):
+        return self.message.author.name
+
     def report_cancelled(self):
         return self.state == State.REPORT_CANCELLED
 
