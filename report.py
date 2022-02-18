@@ -52,8 +52,8 @@ class Report:
     SEXUAL_OPTION_ONE_KEYWORD = "5a"
     SEXUAL_OPTION_TWO_KEYWORD = "5b"
 
-    END_REPORT_KEYWORD = "No"
-    SUBMIT_ANOTHER_REPORT_KEYWORD = "Yes"
+    END_REPORT_KEYWORD = "no"
+    SUBMIT_ANOTHER_REPORT_KEYWORD = "yes"
     MUTE_KEYWORD = "Mute"
     BLOCK_KEYWORD = "Block"
 
@@ -342,12 +342,13 @@ class Report:
             return [reply]
 
         if self.state == State.FINAL_PROMPT:
-            if message.content == self.END_REPORT_KEYWORD:
+            userMessage = message.content
+            if userMessage.lower() == self.END_REPORT_KEYWORD:
                 self.state = State.REPORT_COMPLETE
                 reply = "Thank you for taking the time to report this. We know that interacting with this content can" \
                         " be harmful. Here are some mental health resources for you: <NOTE PUT LINKS HERE>\n\n"
                 return[reply]
-            elif message.content == self.SUBMIT_ANOTHER_REPORT_KEYWORD:
+            elif userMessage.lower() == self.SUBMIT_ANOTHER_REPORT_KEYWORD:
                 self.state = State.REPORT_COMPLETE
                 reply = "Please say 'report' to continue reporting the message(s).\n"
                 return [reply]
