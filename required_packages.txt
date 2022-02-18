@@ -1,0 +1,3 @@
+pip install pytesseract
+pip install pymongo
+pip install dsnpython

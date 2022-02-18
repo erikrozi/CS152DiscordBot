@@ -8,6 +8,11 @@ import re
 import requests
 import modFlow
 from report import Report
+import ocr
+import urllib.request
+
+import pymongo
+from pymongo import MongoClient
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -25,10 +30,10 @@ with open(token_path) as f:
     tokens = json.load(f)
     discord_token = tokens['discord']
     perspective_key = tokens['perspective']
-
+    mongo_url = tokens.get('mongodb')
 
 class ModBot(discord.Client):
-    def __init__(self, key):
+    def __init__(self, key, mongo_url=None):
         intents = discord.Intents.default()
         super().__init__(command_prefix='.', intents=intents)
         self.group_num = None   
@@ -37,6 +42,11 @@ class ModBot(discord.Client):
         self.reports_by_user = {} # Map from user ID of who created the report to a list of their reports
         self.reports_about_user = {} # Map from user ID of who report is about to a list of reports against them
         self.perspective_key = key
+
+        self.cluster = MongoClient(mongo_url) if mongo_url is not None else None
+        self.db = self.cluster['discordbot'] if mongo_url is not None else None
+        self.message_db = self.db['messages'] if mongo_url is not None else None
+        self.userdata_db = self.db['userdata'] if mongo_url is not None else None
 
     async def on_ready(self):
         print(f'{self.user.name} has connected to Discord! It is these guilds:')
@@ -113,7 +123,7 @@ class ModBot(discord.Client):
 
             responses += [modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
                                      self.reports_by_user, self.reports_about_user,
-                                                   self.check_scores(self.eval_text(completed_report.get_message())))]
+                                                   self.check_scores(self.eval_text(completed_report.get_message().content)))]
 
         for r in responses:
             await message.channel.send(r)
@@ -129,15 +139,53 @@ class ModBot(discord.Client):
         await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
 
         responses = []
-        scores = self.eval_text(message)
+        message_text = message.content
+
+        # OCR on each image, currently the text gets appended to message content.
+        for idx, file in enumerate(message.attachments):
+            if not self.valid_image_url(file.url):
+                continue
+
+            save_name = str(message.id) + '_' + str(idx) + '_' + file.filename
+            save_name = os.path.join("tmp", save_name)
+            await file.save(save_name)
+
+            img_text = ocr.process_image(save_name)
+            message_text += " " + img_text
+            if os.path.exists(save_name):
+                os.remove(save_name)
+
+        scores = self.eval_text(message_text)
         bad_things = self.check_scores(scores)
+        
+        if self.message_db is not None:
+            await self.update_message_db(message, scores)
+
         if len(bad_things) > 0:
             responses = [modFlow.automatic_report(bad_things, message, self, self.reports_about_user)]
         await mod_channel.send(self.code_format(json.dumps(scores, indent=2)))
         for r in responses:
             await message.channel.send(r)
 
-    def eval_text(self, message):
+    def valid_image_url(self, url):
+        image_extensions = ['png', 'jpg', 'jpeg']
+        for image_extension in image_extensions:
+            if url.endswith('.' + image_extension):
+                return True
+        return False
+
+    async def update_message_db(self, message, scores):
+        entry = {
+            "_id": message.id,
+            "author_id": message.author.id,
+            "content": message.content,
+            "created_at": message.created_at
+        }
+        entry.update(scores)
+        self.message_db.insert_one(entry)
+        return
+
+    def eval_text(self, text):
         '''
         Given a message, forwards the message to Perspective and returns a dictionary of scores.
         '''
@@ -145,7 +193,7 @@ class ModBot(discord.Client):
 
         url = PERSPECTIVE_URL + '?key=' + self.perspective_key
         data_dict = {
-            'comment': {'text': message.content},
+            'comment': {'text': text},
             'languages': ['en'],
             'requestedAttributes': {
                                     'SEVERE_TOXICITY': {}, 'PROFANITY': {},
@@ -175,5 +223,5 @@ class ModBot(discord.Client):
         return bad_things
             
         
-client = ModBot(perspective_key)
+client = ModBot(perspective_key, mongo_url)
 client.run(discord_token)
