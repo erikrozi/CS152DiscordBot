@@ -18,6 +18,8 @@ class State(Enum):
     ABUSE_SPECIFIC_REPORT = auto()
     REPORT_COMPLETE = auto()
     AUTOMATED_REPORT = auto()
+    REQUEST_TO_BLOCK_USER = auto()
+    REQUEST_TO_MUTE_USER = auto()
 
 # The types of reports that a user can submit.
 class ReportType(Enum):
@@ -54,8 +56,8 @@ class Report:
 
     END_REPORT_KEYWORD = "no"
     SUBMIT_ANOTHER_REPORT_KEYWORD = "yes"
-    MUTE_KEYWORD = "Mute"
-    BLOCK_KEYWORD = "Block"
+    MUTE_KEYWORD = "mute"
+    BLOCK_KEYWORD = "block"
 
     def __init__(self, client):
         self.state = State.REPORT_START
@@ -343,6 +345,15 @@ class Report:
 
         if self.state == State.FINAL_PROMPT:
             userMessage = message.content
+            
+            if userMessage.lower() == self.MUTE_KEYWORD:
+                self.state = State.REQUEST_TO_MUTE_USER
+            elif userMessage.lower() == self.BLOCK_KEYWORD:
+                self.state = State.REQUEST_TO_BLOCK_USER
+            else:
+                # don't do anything
+                pass
+
             if userMessage.lower() == self.END_REPORT_KEYWORD:
                 self.state = State.REPORT_COMPLETE
                 reply = "Thank you for taking the time to report this. We know that interacting with this content can" \
