@@ -80,6 +80,10 @@ class ModBot(discord.Client):
         await self.check_if_in_reporting(message) # Check if currently in reporting flow
 
     async def check_if_in_reporting(self, message):
+        if message.content == "yo":
+            await message.delete()
+            return
+
         # Handle a help message
         if message.content == Report.HELP_KEYWORD:
             reply =  "Use the `report` command to begin the reporting process.\n"
@@ -121,9 +125,12 @@ class ModBot(discord.Client):
                 self.reports_about_user[user_being_reported] = []
             self.reports_about_user[user_being_reported].append(completed_report)
 
-            responses += [modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
+            take_post_down, response = modFlow.new_report_filed(completed_report, user_being_reported, user_making_report,
                                      self.reports_by_user, self.reports_about_user,
-                                                   self.check_scores(self.eval_text(completed_report.get_message().content)))]
+                                                   self.check_scores(self.eval_text(completed_report.get_message().content)))
+            responses += [response]
+            if take_post_down:
+                await completed_report.get_message().delete()
 
         for r in responses:
             await message.channel.send(r)
@@ -162,7 +169,11 @@ class ModBot(discord.Client):
             await self.update_message_db(message, scores)
 
         if len(bad_things) > 0:
-            responses = [modFlow.automatic_report(bad_things, message, self, self.reports_about_user)]
+            take_post_down, response = modFlow.automatic_report(bad_things, message, self, self.reports_about_user)
+            responses += [response]
+            if take_post_down:
+                await message.delete()
+
         await mod_channel.send(self.code_format(json.dumps(scores, indent=2)))
         for r in responses:
             await message.channel.send(r)
