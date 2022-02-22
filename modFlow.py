@@ -16,6 +16,7 @@ PROFANITY = "PROFANITY"
 
 AUTOMATED = "AUTOMATED"
 
+# KYLA TEST MESSAGE
 
 def new_report_filed(completed_report, user_being_reported, user_being_reported_name, user_making_report,
                      user_making_report_name, reports_by_user, reports_about_user, bad_things_list):
