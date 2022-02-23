@@ -79,6 +79,7 @@ class ModBot(discord.Client):
         await self.send_to_mod(message) # Forwards message to mod channel
         await self.check_if_in_reporting(message) # Check if currently in reporting flow
 
+    '''
     async def on_message_edit(self, before, after):
         await mod_channel.send("This message was edited! Trying new function. ")
         await mod_channel.send(before)
@@ -86,15 +87,16 @@ class ModBot(discord.Client):
 
         await self.send_to_mod(after)  # Forwards message to mod channel
         await self.check_if_in_reporting(after)  # Check if currently in reporting flow
-
     '''
+
     async def on_raw_message_edit(self, payload):
         mod_channel = self.mod_channels[payload.guild_id]
-        await mod_channel.send("This message was edited! When does this print?")
+        await mod_channel.send("Message overwritten. What is sent to mod?")
         await mod_channel.send(payload.cached_message)
-        old_message = payload.cached_message
-        await self.send_to_mod(old_message)
-    '''
+
+        new_message = await fetch_message(payload.message_id)
+        await mod_channel.send(new_message)
+        await self.send_to_mod(new_message)
 
 
     async def check_if_in_reporting(self, message):
