@@ -221,6 +221,9 @@ class ModBot(discord.Client):
         if self.message_db is not None:
             await self.update_message_db(message, scores)
 
+        if self.userdata_db is not None:
+            await self.update_user_db(message, scores)
+
         if len(bad_things) > 0:
             take_post_down, response = modFlow.automatic_report(bad_things, message, self, self.reports_about_user, "",
                                                                 message.author.name)
@@ -248,6 +251,21 @@ class ModBot(discord.Client):
         }
         entry.update(scores)
         self.message_db.insert_one(entry)
+        return
+
+    async def update_user_db(self, message, scores):
+        query = {"_id": message.author.id}
+        
+        cumulative_scores = {"cumulative_"+k: v for k, v in scores.items()}
+        cumulative_scores.update({"message_count": 1})
+
+        max_scores = {"max_"+k: v for k, v in scores.items()}
+
+        entry = {
+            "$inc": cumulative_scores,
+            "$max": max_scores
+        }
+        self.userdata_db.update_one(query, entry, upsert=True)
         return
 
     def eval_text(self, text):
