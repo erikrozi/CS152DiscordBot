@@ -83,6 +83,7 @@ class ModBot(discord.Client):
     async def on_raw_message_edit(self, payload):
         mod_channel = self.mod_channels[payload.guild_id]
         await mod_channel.send("This message was edited! When does this print?")
+        await mod_channel.send(payload.cached_message)
         old_message = payload.cached_message.content
         await self.send_to_mod(old_message)
 
