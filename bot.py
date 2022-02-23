@@ -83,10 +83,8 @@ class ModBot(discord.Client):
     async def on_raw_message_edit(self, payload):
         mod_channel = self.mod_channels[payload.guild_id]
         await mod_channel.send("This message was edited! When does this print?")
-        await mod_channel.send(payload.cached_message.content)
-        #await mod_channel.send(payload.message_id)
-        #comment
-        #message.channel.send("The message was edited! Tricky stuff.")
+        old_message = payload.cached_message.content
+        await self.send_to_mod(old_message)
 
 
 
@@ -162,10 +160,12 @@ class ModBot(discord.Client):
         message_text = message.content
 
         '''
-        if (self.on_raw_message_edit(message)){ # parameter is the raw event payload data
-            RawMessageUpdateEvent.cached_message
-        }
+        if (self.on_raw_message_edit()): # parameter is the raw event payload data
+            message_text = payload.cached_message.content
+            await mod_channel.send("inside the send_to_mod function")
+            await mod_channel.send(message_text)
         '''
+
 
         # OCR on each image, currently the text gets appended to message content.
         for idx, file in enumerate(message.attachments):
