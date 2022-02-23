@@ -357,7 +357,7 @@ class Report:
             if userMessage.lower() == self.END_REPORT_KEYWORD:
                 self.state = State.REPORT_COMPLETE
                 reply = "Thank you for taking the time to report this. We know that interacting with this content can" \
-                        " be harmful. Here are some mental health resources for you: <NOTE PUT LINKS HERE>\n\n"
+                        " be harmful. Here are some mental health resources for you: `https://vaden.stanford.edu/caps`\n\n"
                 return[reply]
             elif userMessage.lower() == self.SUBMIT_ANOTHER_REPORT_KEYWORD:
                 self.state = State.REPORT_COMPLETE
