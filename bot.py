@@ -48,6 +48,9 @@ class ModBot(discord.Client):
         self.message_db = self.db['messages'] if mongo_url is not None else None
         self.userdata_db = self.db['userdata'] if mongo_url is not None else None
 
+        self.letters_concat = ""
+
+
     async def on_ready(self):
         print(f'{self.user.name} has connected to Discord! It is these guilds:')
         for guild in self.guilds:
@@ -75,19 +78,22 @@ class ModBot(discord.Client):
         # Ignore messages from us 
         if message.author.id == self.user.id:
             return
+
+        # Added code seg here
+        if message.content.len() == 1 and message.content.isalpha():
+            mod_channel = self.mod_channels[message.guild.id]
+            await mod_channel.send("Singular character added")
+            self.letters += message
+            await mod_channel.send(letters)
+            await self.send_to_mod(letters)  # Forwards message to mod channel
+        else:
+            await mod_channel.send("Resetting string!")
+            self.letters = ""
+        # ending code seg here
         
         await self.send_to_mod(message) # Forwards message to mod channel
         await self.check_if_in_reporting(message) # Check if currently in reporting flow
 
-    '''
-    async def on_message_edit(self, before, after):
-        await mod_channel.send("This message was edited! Trying new function. ")
-        await mod_channel.send(before)
-        await mod_channel.send(after)
-
-        await self.send_to_mod(after)  # Forwards message to mod channel
-        await self.check_if_in_reporting(after)  # Check if currently in reporting flow
-    '''
 
     async def on_raw_message_edit(self, payload):
         mod_channel = self.mod_channels[payload.guild_id]
@@ -167,14 +173,6 @@ class ModBot(discord.Client):
 
         responses = []
         message_text = message.content
-
-        '''
-        if (self.on_raw_message_edit()): # parameter is the raw event payload data
-            message_text = payload.cached_message.content
-            await mod_channel.send("inside the send_to_mod function")
-            await mod_channel.send(message_text)
-        '''
-
 
         # OCR on each image, currently the text gets appended to message content.
         for idx, file in enumerate(message.attachments):
