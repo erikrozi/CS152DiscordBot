@@ -79,12 +79,18 @@ class ModBot(discord.Client):
         await self.send_to_mod(message) # Forwards message to mod channel
         await self.check_if_in_reporting(message) # Check if currently in reporting flow
 
+
+    async def on_raw_message_edit(self, payload):
+        self.send_to_mod(self, "This message was edited! When does this print?")
+        #message.channel.send("The message was edited! Tricky stuff.")
+
+
+
     async def check_if_in_reporting(self, message):
         if message.content == "yo":
             await message.delete()
             return
 
-        # Handle a help message
         if message.content == Report.HELP_KEYWORD:
             reply =  "Use the `report` command to begin the reporting process.\n"
             reply += "Use the `cancel` command to cancel the report process.\n"
@@ -151,6 +157,12 @@ class ModBot(discord.Client):
         responses = []
         message_text = message.content
 
+        '''
+        if (self.on_raw_message_edit(message)){ # parameter is the raw event payload data
+            RawMessageUpdateEvent.cached_message
+        }
+        '''
+
         # OCR on each image, currently the text gets appended to message content.
         for idx, file in enumerate(message.attachments):
             if not self.valid_image_url(file.url):
@@ -204,6 +216,10 @@ class ModBot(discord.Client):
         '''
         Given a message, forwards the message to Perspective and returns a dictionary of scores.
         '''
+
+        # If the message is edited, sends the new message to Perspective and returns the dictionary of scores
+
+
         PERSPECTIVE_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze'
 
         url = PERSPECTIVE_URL + '?key=' + self.perspective_key
