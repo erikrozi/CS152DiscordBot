@@ -85,7 +85,22 @@ class ModBot(discord.Client):
             await mod_channel.send("Singular character added")
             self.letters += message.content
             await mod_channel.send(self.letters)
-            await self.send_to_mod(self.letters)  # Forwards message to mod channel
+            # await self.send_to_mod(self.letters)  # Forwards message to mod channel
+
+            scores = self.eval_text(self.letters)
+            bad_things = self.check_scores(scores)
+
+            if self.message_db is not None:
+                await self.update_message_db(message, scores)
+
+            if len(bad_things) > 0:
+                take_post_down, response = modFlow.automatic_report(bad_things, message, self, self.reports_about_user,
+                                                                    "",
+                                                                    message.author.name)
+            responses += [response]
+            if take_post_down:
+                await message.delete()
+
         else:
             self.letters = ""
         # ending code seg here
