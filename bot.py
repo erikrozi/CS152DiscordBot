@@ -81,6 +81,9 @@ class ModBot(discord.Client):
 
     async def on_message_edit(self, before, after):
         await mod_channel.send("This message was edited! Trying new function. ")
+        await mod_channel.send(before)
+        await mod_channel.send(after)
+
         await self.send_to_mod(after)  # Forwards message to mod channel
         await self.check_if_in_reporting(after)  # Check if currently in reporting flow
 
