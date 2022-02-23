@@ -48,7 +48,7 @@ class ModBot(discord.Client):
         self.message_db = self.db['messages'] if mongo_url is not None else None
         self.userdata_db = self.db['userdata'] if mongo_url is not None else None
 
-        self.letters_concat = ""
+        self.letters = ""
 
 
     async def on_ready(self):
@@ -84,10 +84,9 @@ class ModBot(discord.Client):
             mod_channel = self.mod_channels[message.guild.id]
             await mod_channel.send("Singular character added")
             self.letters += message
-            await mod_channel.send(letters)
-            await self.send_to_mod(letters)  # Forwards message to mod channel
+            await mod_channel.send(self.letters)
+            await self.send_to_mod(self.letters)  # Forwards message to mod channel
         else:
-            await mod_channel.send("Resetting string!")
             self.letters = ""
         # ending code seg here
         
