@@ -49,6 +49,7 @@ class ModBot(discord.Client):
         self.userdata_db = self.db['userdata'] if mongo_url is not None else None
 
         self.letters = ""
+        self.char_messages_array = []
 
 
     async def on_ready(self):
@@ -84,24 +85,26 @@ class ModBot(discord.Client):
             mod_channel = self.mod_channels[message.guild.id]
             await mod_channel.send("Singular character added")
             self.letters += message.content
+            self.char_messages_array.append(message)
+
             await mod_channel.send(self.letters)
             # await self.send_to_mod(self.letters)  # Forwards message to mod channel
 
             scores = self.eval_text(self.letters)
             bad_things = self.check_scores(scores)
-
-            if self.message_db is not None:
-                await self.update_message_db(message, scores)
+            responses = []
 
             if len(bad_things) > 0:
                 take_post_down, response = modFlow.automatic_report(bad_things, message, self, self.reports_about_user,
                                                                     "",
                                                                     message.author.name)
-            responses += [response]
-            if take_post_down:
-                await message.delete()
+                responses += [response]
+                if take_post_down:
+                    for m in self.char_messages_array:
+                        await m.delete()
 
         else:
+            self.char_messages_array = []
             self.letters = ""
         # ending code seg here
         
