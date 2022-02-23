@@ -80,7 +80,7 @@ class ModBot(discord.Client):
             return
 
         # Added code seg here
-        if message.content.len() == 1 and message.content.isalpha():
+        if len(message.content) == 1 and message.content.isalpha():
             mod_channel = self.mod_channels[message.guild.id]
             await mod_channel.send("Singular character added")
             self.letters += message
