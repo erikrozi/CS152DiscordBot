@@ -100,6 +100,8 @@ class ModBot(discord.Client):
                                                                     message.author.name)
                 responses += [response]
                 if take_post_down:
+                    self.char_messages_array = []
+                    self.letters = ""
                     for m in self.char_messages_array:
                         await m.delete()
 
