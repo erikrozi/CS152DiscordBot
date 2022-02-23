@@ -91,8 +91,6 @@ class ModBot(discord.Client):
 
     async def on_raw_message_edit(self, payload):
         mod_channel = self.mod_channels[payload.guild_id]
-        await mod_channel.send("Message overwritten. What is sent to mod?")
-        await mod_channel.send(payload.cached_message)
         channel = self.get_channel(payload.channel_id)
         new_message = await channel.fetch_message(payload.message_id)
         await mod_channel.send(new_message)
