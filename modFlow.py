@@ -16,8 +16,6 @@ PROFANITY = "PROFANITY"
 
 AUTOMATED = "AUTOMATED"
 
-# KYLA TEST MESSAGE
-
 def new_report_filed(completed_report, user_being_reported, user_being_reported_name, user_making_report,
                      user_making_report_name, reports_by_user, reports_about_user, bad_things_list):
     # Check if abuse or not.
@@ -51,7 +49,7 @@ def new_report_filed(completed_report, user_being_reported, user_being_reported_
                                                              user_making_report_name, user_being_reported_name)
         response += " " + user_making_report_name + ": Some forms of hate speech can be legally prosecuted, including libel. " \
                                               "Please see these resources to see how you could potentially hold your " \
-                                              "abusers accountable under the law."
+                                              "abusers accountable under the law. https://www.ala.org/advocacy/intfreedom/hate"
         return True, response
     elif report_type == ReportType.THREATENING_DANGEROUS:
         return threatening_dangerous_report(completed_report, bad_things_list, user_being_reported, reports_about_user,
@@ -99,7 +97,7 @@ def threatening_dangerous_report(report, bad_things_list, user_being_reported, r
     if "THREAT" in bad_things_list:
         manager_review_queue.append(report) # For chance of terrorism.
 
-    return True, check_if_have_3_strikes(reports_about_user[user_being_reported], user_being_reported_name) + user_making_report_name + ": Please see the below mental health resources."
+    return True, check_if_have_3_strikes(reports_about_user[user_being_reported], user_being_reported_name)
 
 
 def general_harassment_report(user_being_reported, user_making_report, reports_by_user, reports_about_user,
